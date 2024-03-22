@@ -1,0 +1,5 @@
+dist/
+
+.devcontainer/
+
+__pycache__

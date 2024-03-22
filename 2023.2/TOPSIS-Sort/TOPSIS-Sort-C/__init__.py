@@ -1,0 +1,1 @@
+from .topsis_sort_c import *
