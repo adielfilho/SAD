@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: TOPSIS-Sort-C
+Version: 0.1.1
+Summary: TOPSIS-Sort-C implemented in python
+Home-page: https://github.com/gustavo-ghcs/TOPSIS-Sort-C
+Author: Gustavo Hollanda, Geovanna Domingos, Giovanna Machado, Higor Cunha, Maria Eduarda Melo
+Author-email: ghcs@cin.ufpe.br, gmdomingosn@gmail.com, gpmb@cin.ufpe.br, hbc@cin.ufpe.br, meomcin.ufpe.br
+License: MIT License
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.26.4
+
+# TOPSIS-Sort-C-SAD
+Repositório destinado ao projeto da cadeira de Sistemas de Apoio à Decisão do Centro de Informática da UFPE.

@@ -1,0 +1,4 @@
+numpy>=1.26.4
+streamlit>=1.32.2
+awesome_streamlit>=20200728.1
+awesome-streamlit>=20200728.1
