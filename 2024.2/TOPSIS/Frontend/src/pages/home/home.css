@@ -1,0 +1,50 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0% 10rem;
+
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 90vh;
+
+        .header-informations-container {
+            display: flex;
+            flex-direction: column;
+            width: 47%;
+            gap: 1rem;
+
+            h1 {
+                font-size: 3rem;
+            }
+
+            p {
+                font-size: 1.4rem;
+                line-height: 2.8rem;
+            }
+        }
+
+        .figure {
+            width: 40%;
+            img {
+                width: 100%;
+            }
+        }
+    }
+
+    .section-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        justify-content: center;
+        align-items: center;
+
+        h2 {
+            font-size: 2.6rem;
+        }
+    }
+}
+
