@@ -45,4 +45,3 @@ class Topsis:
         scores = self.calculate_scores()
         ranking = np.argsort(scores)[::-1]  
         return (ranking + 1).tolist(), scores.tolist()
-
