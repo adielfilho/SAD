@@ -20,6 +20,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -29,3 +30,10 @@ code {
 a {
   text-decoration: none;
 }
+
+@media screen and (min-width: 1600px) {
+  body {
+      zoom: 120%;
+  }
+}
+

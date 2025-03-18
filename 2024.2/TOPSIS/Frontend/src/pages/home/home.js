@@ -9,17 +9,26 @@ const Home = () => {
 
         <header className="section-with-img-container">
             <div className="section-informations-container">
-                <h1>Bem-vindo ao Método TOPSIS</h1>
+                <h1>Bem-vindo ao Método <span>TOPSIS</span></h1>
                 <p>
                     O <strong>Técnica para Ordem de Preferência por Similaridade com a Solução Ideal</strong> 
                     (TOPSIS) é um método de tomada de decisão multicritério amplamente utilizado para 
                     escolher a melhor alternativa entre várias opções, considerando diferentes critérios de 
                     avaliação.
                 </p>
+
+                <Link to="/topsis">
+                  <button className="button primary">
+                    Explorar Método
+                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                  </button>
+                </Link>
+
             </div>
 
             <figure className="figure">
-                <img src="assets/tela-inicial.svg" alt="Logo" />
+                <img className="flip" src="assets/Innovation.gif" alt="Logo" />
+                
             </figure>
         </header>
 
@@ -50,9 +59,7 @@ const Home = () => {
             <div className="section-informations-container">
                 <h2>Como funciona? ⚙️</h2>
                 <p>
-                  O método calcula a alternativa que está mais próxima da solução ideal (melhor opção) 
-                  e mais distante da solução anti-ideal (pior opção). Para isso, utiliza uma matriz de 
-                  desempenho ponderada e métricas de distância.
+                O método <strong>TOPSIS</strong> é uma técnica de apoio à decisão que <strong>identifica a alternativa mais próxima da solução ideal</strong> (melhor opção) e se <strong>afasta da solução anti-ideal</strong> (pior opção). Para isso, utiliza uma <strong>matriz de desempenho ponderada</strong> e <strong>métricas de distância</strong>, considerando os pesos dos critérios de avaliação para oferecer uma análise clara e objetiva.
                 </p>
             </div>
         </section>
