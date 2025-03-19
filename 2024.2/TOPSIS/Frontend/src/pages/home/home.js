@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
+import Navbar from "../../layout/navbar/navbar.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import "./home.css"; 
 
 const Home = () => {
   return (
+    <>
+    <Navbar />
     <div className="home-container">
 
         <header className="section-with-img-container">
@@ -100,6 +103,7 @@ const Home = () => {
           </div>
         </section>
     </div>
+    </>
   );
 };
 

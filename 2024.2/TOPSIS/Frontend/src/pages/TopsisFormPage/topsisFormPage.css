@@ -1,13 +1,17 @@
 .topsis-form-page-container {
     display: flex;
     padding: 0% 10rem;
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 4%;
+    padding-bottom: 2%;
     min-height: 83vh;
-    justify-content: space-between;
-    gap: 4rem;
+    justify-content: flex-end;
+    gap: 2rem;
     
     figure {
-        width: 45%;
+
+        left: 10rem;        position: fixed;
+        width: 37%;
         img {
             width: 100%;
         }
@@ -20,7 +24,14 @@
         gap: 2rem;
         align-items: flex-start;
         justify-content: flex-start;
+        width: 50%;
         height: 100%;
+        padding-top: 4%;
+
+        label {
+            font-weight: 500;
+            font-size: 1.6rem;
+        }
 
 
         fieldset {
@@ -30,10 +41,7 @@
             width: 100%;
             border: none;
 
-            label {
-                font-weight: 500;
-                font-size: 1.6rem;
-            }
+            
 
             .input-box {
                 display: grid;
@@ -54,19 +62,129 @@
                     border: .1rem solid #ccc;
                     border-right: none;
                 }
+
+                &.input {
+                    border: .1rem solid #ccc;
+                }
             }
 
             .button-addition {
                 border-radius: 0rem 1rem 1rem 0rem;
-                border: .1rem solid #ccc;
+                border: .1rem solid #FF3E3E;
                 border-left: none;
                 background-color: #FF3E3E;
                 color: white;
                 font-weight: 600;
                 cursor: pointer;
+                transition: 200ms all;
+
+                &:hover {
+                    opacity: 0.8;
+                }
             }
+
+            .filled-inputs-list {
+                display: flex;
+                gap: .5rem;
+                list-style: none;
+                color: rgb(95, 95, 95);
+
+                & li {
+                    padding: .5rem;
+                    border-radius: 1rem;
+                    background-color: #cccccc88;
+                }
+            }
+
+            .list-types-criteria {
+                display: grid;
+                grid-template-columns: 22% 22% 22% 22%;
+                gap: 1rem;
+                flex-wrap: wrap;
+                width: 100%;
+
+                .type-criteria {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    background-color: #cccccc88;
+                    padding: 1rem;
+                    border-radius: .8rem;
+                    gap: .5rem;
+                    width: 100%;
+                    max-width: 100%;
+
+                    span {
+                        display: inline-block;
+                        font-weight: 500;
+                        font-size: 1.2rem;
+                        color: rgb(95, 95, 95);
+                        width: fit-content;
+                        word-wrap: break-word; /* Quebra palavras longas */
+                        overflow-wrap: break-word; /* Alternativa moderna */
+                    }
+
+                    select {
+                        border-radius: .5rem;
+                        padding: .5rem;
+                        background-color: white;
+                        border: .1rem solid #ccc;
+                        width: 100%;
+                    }
+
+                    input {
+                        display: flex;
+                        border: .1rem solid #ccc;
+                        width: 100%;
+                        height: 3rem;
+                        border-radius: .5rem;
+                        padding: .5rem;
+                    }
+                }
+             }
+
+             
+        }
+    }
+
+    .matrix-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 1rem;
+        background-color: #cccccc88;
+        padding: 1rem;
+
+        span {
+            font-size: 1.4rem;
         }
 
-        
+        .list-matrix {
+            display: grid;
+            grid-template-columns: 22% 22% 22% 22%;
+            gap: 1rem;
+
+            .item-matrix {
+                display: flex;
+                flex-direction: column;
+                gap: .5rem;
+
+                label {
+                    font-size: 1.2rem;
+                }
+
+                input {
+                    display: flex;
+                    border: .1rem solid #ccc;
+                    width: 100%;
+                    height: 3rem;
+                    border-radius: .5rem;
+                    padding: .5rem;
+                }
+            }
+         }
     }
+
+   
 }
