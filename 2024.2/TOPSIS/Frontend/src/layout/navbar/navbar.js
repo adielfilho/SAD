@@ -23,7 +23,7 @@ const Navbar = () => {
           </Link>
         </li>
         <li  className="item-highlight">
-          <Link to="/">
+          <Link to="TopsisForm">
             Vamos Começar
           </Link>
         </li>

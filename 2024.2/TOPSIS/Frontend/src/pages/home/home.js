@@ -17,7 +17,7 @@ const Home = () => {
                     avaliação.
                 </p>
 
-                <Link to="/topsis">
+                <Link to="/TopsisForm">
                   <button className="button primary">
                     Explorar Método
                     <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
@@ -91,7 +91,7 @@ const Home = () => {
             </p>
 
 
-            <Link to="/topsis">
+            <Link to="/TopsisForm">
               <button className="button primary">
                 Começar
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
