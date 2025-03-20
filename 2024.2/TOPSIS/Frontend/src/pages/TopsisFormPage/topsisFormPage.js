@@ -1,169 +1,204 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./topsisFormPage.css";
 
 function TopsisFormPage() {
+  const navigate = useNavigate();
 
-    const [alternativas, setAlternativas] = useState([]);
-  const [criterios, setCriterios] = useState([]);
-  const [matriz, setMatriz] = useState({});
+  const [alternatives, setAlternatives] = useState([]);
+  const [criteria, setCriteria] = useState([]);
+  const [performanceMatrix, setPerformanceMatrix] = useState({});
+  const [distanceMetric, setDistanceMetric] = useState("");
 
-  const adicionarAlternativa = (event) => {
+  const addAlternative = (event) => {
     event.preventDefault();
     const input = event.target.previousSibling;
-    const valor = input.value.trim();
-    if (valor) {
-      setAlternativas([...alternativas, valor]);
+    const value = input.value.trim();
+    if (value) {
+      setAlternatives([...alternatives, value]);
       input.value = '';
     }
   };
 
-  const adicionarCriterio = (event) => {
+  const addCriterion = (event) => {
     event.preventDefault();
     const input = event.target.previousSibling;
-    const valor = input.value.trim();
-    if (valor) {
-      setCriterios([...criterios, valor]);
+    const value = input.value.trim();
+    if (value) {
+      setCriteria([...criteria, value]);
       input.value = '';
     }
   };
 
-  const atualizarMatriz = (alt, crit, valor) => {
-    setMatriz((prev) => ({
+  const updateMatrix = (alt, crit, value) => {
+    setPerformanceMatrix((prev) => ({
       ...prev,
       [alt]: {
         ...prev[alt],
-        [crit]: valor
+        [crit]: value
       }
     }));
   };
 
-  const [tiposCriterio, setTiposCriterio] = useState({});
+  const [criteriaTypes, setCriteriaTypes] = useState({});
 
-  const atualizarTipoCriterio = (crit, valor) => {
-    setTiposCriterio((prev) => ({
+  const updateCriterionType = (crit, value) => {
+    setCriteriaTypes((prev) => ({
       ...prev,
-      [crit]: valor
+      [crit]: value
     }));
   };
 
-  const [pesosCriterio, setPesosCriterio] = useState({});
+  const [criteriaWeights, setCriteriaWeights] = useState({});
 
-  const atualizarPesoCriterio = (crit, valor) => {
-    setPesosCriterio((prev) => ({
+  const updateCriterionWeight = (crit, value) => {
+    setCriteriaWeights((prev) => ({
       ...prev,
-      [crit]: valor
+      [crit]: value
     }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    // Converting matrix into expected format
+    const performanceMatrixFormatted = {};
+    alternatives.forEach((alt) => {
+      performanceMatrixFormatted[alt] = criteria.map((crit) => performanceMatrix[alt]?.[crit] || 0);
+    });
+
+    // Structuring data into the required format
+    const inputData = {
+      method: "TOPSIS",
+      parameters: {
+        alternatives,
+        criteria,
+        performance_matrix: performanceMatrixFormatted,
+        criteria_types: criteriaTypes,
+        weights: criteriaWeights,
+        distance_metric: distanceMetric,
+      },
+    };
+
+    console.log(inputData);
+
+    // Redirecting to result page with the data
+    // navigate("/result", { state: { inputData } });
   };
 
   return (
     <div className="topsis-form-page-container">
+      <figure>
+        <img src="assets/Forms.svg" alt="TOPSIS Method" />
+      </figure>
 
-        <figure>
-            <img src="assets/Forms.svg" alt="" />
-        </figure>
+      <div className="forms-container">
+        <h1>Preencha os Inputs para o Método TOPSIS</h1>
+        <p>
+          Preencha as informações necessárias para calcular o método TOPSIS. 
+          Insira alternativas, critérios, a matriz de performance, os tipos de critérios, os pesos e a métrica de distância desejada.
+        </p>
 
-        <div className="forms-container">
-            <h1>Preencha os Inputs para o Método TOPSIS</h1>
-            <p>
-                Preencha as informações necessárias para calcular o método TOPSIS. 
-                Insira alternativas, critérios, a matriz de performance, os tipos de critérios, os pesos e a métrica de distância desejada.
-            </p>
+        <fieldset>
+          <label>Alternativas</label>
+          <div className="input-box">
+            <input type="text" className="input-addition" placeholder="Preencha e adicione alternativas" />
+            <button className="button-addition" onClick={addAlternative}>Adicionar +</button>
+          </div>
+          <ul className="filled-inputs-list">
+            {alternatives.map((alt, idx) => (<li key={idx}>{alt}</li>))}
+          </ul>
+        </fieldset>
 
-            <fieldset> 
-                <label>Alternativas</label>
-                <div className="input-box">
-                    <input type="text" className="input-addition" placeholder="Preencha e adicione alternativas"></input>
-                    <button className="button-addition" onClick={adicionarAlternativa}>Adicionar +</button>
+        <fieldset>
+          <label>Critérios</label>
+          <div className="input-box">
+            <input type="text" className="input-addition" placeholder="Enter and add criteria" />
+            <button className="button-addition" onClick={addCriterion}>Adicionar +</button>
+          </div>
+          <ul className="filled-inputs-list">
+            {criteria.map((alt, idx) => (<li key={idx}>{alt}</li>))}
+          </ul>
+        </fieldset>
+
+        {criteria.length > 0 && (
+          <fieldset>
+            <label>Tipos de Critérios (Max/Min)</label>
+            <div className="list-types-criteria">
+              {criteria.map((crit, idx) => (
+                <div className="type-criteria" key={idx}>
+                  <span>{crit}</span>
+                  <select onChange={(e) => updateCriterionType(crit, e.target.value)}>
+                    <option value="max">Max</option>
+                    <option value="min">Min</option>
+                  </select>
                 </div>
-                <ul className="filled-inputs-list">
-                    {alternativas.map((alt, idx) => (<li key={idx}>{alt}</li>))}
-                </ul>
-            </fieldset>
-            
-            <fieldset> 
-                <label>Critérios</label>
-                <div className="input-box">
-                    <input type="text" className="input-addition" placeholder="Preencha e adicione critérios"></input>
-                    <button className="button-addition" onClick={adicionarCriterio}>Adicionar +</button>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        {criteria.length > 0 && (
+          <fieldset>
+            <label>Peso dos Critérios</label>
+            <div className="list-types-criteria">
+              {criteria.map((crit, idx) => (
+                <div className="type-criteria" key={idx}>
+                  <span>{crit}</span>
+                  <input
+                    type="number"
+                    onChange={(e) => updateCriterionWeight(crit, e.target.value)}
+                  />
                 </div>
-                <ul className="filled-inputs-list">
-                    {criterios.map((alt, idx) => (<li key={idx}>{alt}</li>))}
-                </ul>
-            </fieldset>
+              ))}
+            </div>
+          </fieldset>
+        )}
 
-            {criterios.length > 0 && (
-                    <fieldset>
-                    <label>Tipos de Critérios (Max/Min)</label>
-                    <div className="list-types-criteria">
-                        {criterios.map((crit, idx) => (
-
-                        <div className="type-criteria" key={idx}>
-                            <span>{crit}</span>
-                            <select  onChange={(e) => atualizarTipoCriterio(crit, e.target.value)}>
-                                <option value="max">Max</option>
-                                <option value="min">Min</option>
-                            </select>
-                        </div>
-                        ))}
+        {alternatives.length > 0 && criteria.length > 0 && (
+          <>
+            <label>Matriz de Performance</label>
+            {alternatives.map((alt, idx) => (
+              <fieldset className="matrix-container" key={idx}>
+                <span>Alternative: {alt}</span>
+                <div className="list-matrix">
+                  {criteria.map((crit, cidx) => (
+                    <div key={cidx} className="item-matrix">
+                      <label>{crit}: </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        onChange={(e) => updateMatrix(alt, crit, e.target.value)}
+                      />
                     </div>
-                    </fieldset>
-            )}
+                  ))}
+                </div>
+              </fieldset>
+            ))}
+          </>
+        )}
 
-            {criterios.length > 0 && (
-                <fieldset>
-                    <label>Peso dos Critério</label>
-                    <div className="list-types-criteria">
-                        {criterios.map((crit, idx) => (
-                        <div className="type-criteria" key={idx}>
-                            <span>{crit}</span>
-                            <input
-                                type="number"
-                                value="0"
-                                onChange={(e) => atualizarPesoCriterio(crit, e.target.value)}
-                            />
-                      
-                        </div>
-                        ))}
-                    </div>
-                </fieldset>
-            )}
+        {(alternatives.length > 0 && criteria.length > 0) && (
+          <fieldset>
+            <label>Métrica de distância</label>
+            <div className="">
+              <input
+                type="number"
+                className="input"
+                value={distanceMetric}
+                onChange={(e) => setDistanceMetric(parseInt(e.target.value) || 0)}
+                placeholder="Enter the distance metric"
+              />
+            </div>
+          </fieldset>
+        )}
 
-            {alternativas.length > 0 && criterios.length > 0 && (
-            <>
-                <label>Matriz de Performance</label>
-
-                {alternativas.map((alt, idx) => (
-                <fieldset className="matrix-container" key={idx}> {/* key deve estar no fieldset */}
-                    <span>Alternativa: {alt}</span> 
-                    <div className="list-matrix">
-                    {criterios.map((crit, cidx) => (
-                        <div key={cidx} className="item-matrix">
-                        <label>{crit}: </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            value="0"
-                            onChange={(e) => atualizarMatriz(alt, crit, e.target.value)}
-                        />
-                        </div>
-                    ))}
-                    </div>
-                </fieldset>
-                ))}
-            </>
-            )}
-
-            {(alternativas.length > 0 && criterios.length > 0 && 
-                <fieldset> 
-                    <label>Métrica de distância</label>
-                    <div className="">
-                        <input type="number" className="input" placeholder="Preencha a métrica de distância"></input>
-                    </div>
-                </fieldset>
-            )}
-
-           
-        </div>
+      {(alternatives.length > 0 && criteria.length > 0) && (
+        <button className="button primary" onClick={handleSubmit}>
+          Executar o método TOPSIS
+        </button>
+      )}
+      </div>
     </div>
   );
 }
