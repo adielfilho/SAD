@@ -83,7 +83,7 @@ function TopsisFormPage() {
     console.log(inputData);
 
     // Redirecting to result page with the data
-    // navigate("/result", { state: { inputData } });
+    navigate("/result", { state: { inputData } });
   };
 
   return (

@@ -1,0 +1,11 @@
+.result-page-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0% 10rem;
+    align-items: flex-start;
+    padding-top: 4%;
+    padding-bottom: 2%;
+    min-height: 83vh;
+    justify-content: flex-start;
+    gap: 2rem;
+}
