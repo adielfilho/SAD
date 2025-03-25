@@ -83,7 +83,7 @@ function TopsisFormPage() {
     console.log(inputData);
 
     // Redirecting to result page with the data
-    navigate("/result", { state: { inputData } });
+    navigate("/Result", { state: { inputData } });
   };
 
   return (
@@ -194,8 +194,8 @@ function TopsisFormPage() {
         )}
 
       {(alternatives.length > 0 && criteria.length > 0) && (
-        <button className="button primary" onClick={handleSubmit}>
-          Executar o método TOPSIS
+        <button className="button primary submit" onClick={handleSubmit}>
+          Executar
         </button>
       )}
       </div>

@@ -10,7 +10,7 @@ function ResultPage() {
 
   useEffect(() => {
     async function loadAndRunPyodide() {
-      if (!inputData) return;
+      // if (!inputData) return;
 
       // 1. Carregar Pyodide dinamicamente
       if (!window.loadPyodide) {
@@ -37,8 +37,7 @@ function ResultPage() {
       try {
         const response = await fetch("/main.py"); // Certifique-se de que o arquivo está acessível na pasta `public`
         const pythonCode = await response.text();
-
-
+    
         const input = {
           "method": "TOPSIS",
           "parameters": {
@@ -65,13 +64,13 @@ function ResultPage() {
 
 
         // 4. Passar os dados do formulário como JSON para o Pyodide
-        pyodideInstance.globals.set("input_data", JSON.stringify(input));
+        pyodideInstance.globals.set("input_data", JSON.stringify(inputData));
 
         // 5. Executar o código Python e capturar o resultado
         const output = await pyodideInstance.runPythonAsync(pythonCode);
 
         // 6. Chamar a função get_input_data exposta pelo Pyodide
-        const resultProxy = pyodideInstance.globals.get("get_input_data")(JSON.stringify(input));
+        const resultProxy = pyodideInstance.globals.get("get_input_data")(JSON.stringify(inputData));
 
         // 7. Converter o resultado de Proxy para JavaScript
         const result = resultProxy.toJs(); // Converte o proxy para um objeto JavaScript
@@ -88,84 +87,92 @@ function ResultPage() {
 
   // Função para renderizar o conteúdo do resultado
   const renderResult = (result) => {
-    if (!result) return <p>Carregando...</p>;
+    if (!result) return <div className="loader-container"><span className="loader"></span> Carregando...</div>;
     if (result.error) return <p>Erro: {result.error}</p>;
   
     const results = result.get("results")
 
     return (
-      <div>
-        {/* Solução Ideal Positiva */}
-        <div>
-          <h4>Solução Ideal Positiva:</h4>
-          <ul>
-            {Array.from(results.get("positive_ideal_solution").entries()).map(([criterion, value]) => (
-              <li key={criterion}>
-                <strong>{criterion}</strong>: {value.toFixed(4)}
-              </li>
-            ))}
-          </ul>
+      <div className="result-list-container">
+        <div className="box-1">
+          {/* Ranking */}
+          <div className="result-box ranking">
+              <h4>Ranking das Alternativas</h4>
+              <ol>
+                {results.get("ranking").map((alternative, index) => (
+                  <li key={alternative}>
+                    <strong>{index + 1} º</strong> {alternative}
+                  </li>
+                ))}
+              </ol>
+            </div>
+            {/* Scores TOPSIS */}
+            <div className="result-box score">
+              <h4>Scores TOPSIS</h4>
+              <ul>
+                {Array.from(results.get("topsis_score").entries()).map(([alternative, value]) => (
+                  <li key={alternative}>
+                    <strong>{alternative}</strong> {value.toFixed(4)}
+                  </li>
+                ))}
+              </ul>
+            </div>
         </div>
-    
-        {/* Solução Ideal Negativa */}
-        <div>
-          <h4>Solução Ideal Negativa:</h4>
-          <ul>
-            {Array.from(results.get("negative_ideal_solution").entries()).map(([criterion, value]) => (
-              <li key={criterion}>
-                <strong>{criterion}</strong>: {value.toFixed(4)}
-              </li>
-            ))}
-          </ul>
+
+        <div className="box-1">
+
+            {/* Solução Ideal Positiva */}
+            <div className="result-box small-list">
+              <h4>Solução Ideal Positiva</h4>
+              <ul>
+                {Array.from(results.get("positive_ideal_solution").entries()).map(([criterion, value]) => (
+                  <li key={criterion}>
+                    <strong>{criterion}:</strong> {value.toFixed(4)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+        
+            {/* Solução Ideal Negativa */}
+            <div className="result-box  small-list">
+              <h4>Solução Ideal Negativa</h4>
+              <ul>
+                {Array.from(results.get("negative_ideal_solution").entries()).map(([criterion, value]) => (
+                  <li key={criterion}>
+                    <strong>{criterion}</strong>: {value.toFixed(4)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+        
+            {/* Distância para a Solução Ideal Positiva */}
+            <div className="result-box  small-list">
+              <h4>Distância para a Solução Ideal Positiva</h4>
+              <ul>
+                {Array.from(results.get("distance_to_pis").entries()).map(([alternative, value]) => (
+                  <li key={alternative}>
+                    <strong>{alternative}</strong>: {value.toFixed(4)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+        
+            {/* Distância para a Solução Ideal Negativa */}
+            <div className="result-box  small-list">
+              <h4>Distância para a Solução Ideal Negativa</h4>
+              <ul>
+                {Array.from(results.get("distance_to_nis").entries()).map(([alternative, value]) => (
+                  <li key={alternative}>
+                    <strong>{alternative}</strong>: {value.toFixed(4)}
+                  </li>
+                ))}
+              </ul>
+            </div>   
+
         </div>
-    
-        {/* Distância para a Solução Ideal Positiva */}
-        <div>
-          <h4>Distância para a Solução Ideal Positiva:</h4>
-          <ul>
-            {Array.from(results.get("distance_to_pis").entries()).map(([alternative, value]) => (
-              <li key={alternative}>
-                <strong>{alternative}</strong>: {value.toFixed(4)}
-              </li>
-            ))}
-          </ul>
-        </div>
-    
-        {/* Distância para a Solução Ideal Negativa */}
-        <div>
-          <h4>Distância para a Solução Ideal Negativa:</h4>
-          <ul>
-            {Array.from(results.get("distance_to_nis").entries()).map(([alternative, value]) => (
-              <li key={alternative}>
-                <strong>{alternative}</strong>: {value.toFixed(4)}
-              </li>
-            ))}
-          </ul>
-        </div>
-    
-        {/* Scores TOPSIS */}
-        <div>
-          <h4>Scores TOPSIS:</h4>
-          <ul>
-            {Array.from(results.get("topsis_score").entries()).map(([alternative, value]) => (
-              <li key={alternative}>
-                <strong>{alternative}</strong>: {value.toFixed(4)}
-              </li>
-            ))}
-          </ul>
-        </div>
-    
-        {/* Ranking */}
-        <div>
-          <h4>Ranking:</h4>
-          <ol>
-            {results.get("ranking").map((alternative, index) => (
-              <li key={alternative}>
-                <strong>{alternative}</strong> (Posição {index + 1})
-              </li>
-            ))}
-          </ol>
-        </div>
+        
+        
+       
       </div>
     );
   };

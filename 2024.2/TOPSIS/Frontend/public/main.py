@@ -5,28 +5,33 @@ class Topsis:
     def __init__(self, alternatives, criteria, performance_matrix, criteria_types, weights):
         """
         Classe para executar o algoritmo TOPSIS.
-
-        :param alternatives: Lista de alternativas (ex: ["A1", "A2", "A3"])
-        :param criteria: Lista de critérios (ex: ["C1", "C2", "C3"])
-        :param performance_matrix: Matriz de desempenho (dicionário onde as chaves são as alternativas)
-        :param criteria_types: Tipos de critérios (dicionário com "max" ou "min")
-        :param weights: Pesos dos critérios (dicionário com os pesos dos critérios)
         """
         self.alternatives = alternatives
         self.criteria = criteria
-        self.performance_matrix = performance_matrix
-        self.criteria_types = criteria_types
-        self.weights = weights
+        
+        # Converter strings para float na matriz de desempenho
+        self.performance_matrix = {
+            alt: [float(value) for value in performance_matrix[alt]]
+            for alt in alternatives
+        }
+        
+        # Criar matriz numpy (alternativas x critérios)
+        self.decision_matrix = np.array([self.performance_matrix[alt] for alt in alternatives], dtype=np.float64)
 
-        # Converte a matriz de desempenho para um formato numpy (alternativas x critérios)
-        self.decision_matrix = np.array([performance_matrix[alt] for alt in alternatives], dtype=np.float64)
+        # Definir critérios como "max" por padrão se não estiverem definidos
+        self.criteria_flags = np.array([
+            1 if criteria_types.get(c, "max") == "max" else 0
+            for c in criteria
+        ])
 
-        # Mapeia os tipos de critérios (max ou min) para 1 ou 0
-        self.criteria_flags = np.array([1 if criteria_types[c] == "max" else 0 for c in criteria])
+        # Verificar se todos os critérios possuem pesos definidos
+        missing_criteria = set(criteria) - set(weights.keys())
+        if missing_criteria:
+            raise ValueError(f"Os seguintes critérios não possuem pesos definidos: {missing_criteria}")
 
-        # Converte os pesos para um formato numpy
-        self.weights_array = np.array([weights[c] for c in criteria], dtype=np.float64)
-    
+        # Converter strings de pesos para float
+        self.weights_array = np.array([float(weights[c]) for c in criteria], dtype=np.float64)
+
     def normalize_matrix(self):
         """Normaliza a matriz de decisão usando a norma Euclidiana."""
         norm = np.linalg.norm(self.decision_matrix, axis=0)
@@ -57,7 +62,7 @@ class Topsis:
     def rank_alternatives(self):
         """Retorna o ranking das alternativas baseado nos scores."""
         scores = self.calculate_scores()
-        ranking = np.argsort(scores)[::-1]  # Ranking em ordem decrescente
+        ranking = np.argsort(scores)[::-1]  # Ordenação decrescente
         ranked_alternatives = [self.alternatives[i] for i in ranking]
         return ranked_alternatives, scores.tolist()
 
@@ -72,9 +77,9 @@ def run_topsis(input_data):
         alternatives = data['parameters']['alternatives']
         criteria = data['parameters']['criteria']
         performance_matrix = data['parameters']['performance_matrix']
-        criteria_types = data['parameters']['criteria_types']
+        criteria_types = data['parameters'].get('criteria_types', {})
         weights = data['parameters']['weights']
-        
+
         # Instanciar a classe Topsis com os dados extraídos
         topsis = Topsis(alternatives, criteria, performance_matrix, criteria_types, weights)
 
@@ -105,7 +110,7 @@ def run_topsis(input_data):
         }
 
         return result
-    
+
     except Exception as e:
         print(f"Erro ao processar os dados: {e}")
         return {"error": str(e)}
@@ -113,4 +118,3 @@ def run_topsis(input_data):
 # Função principal chamada pelo React
 def get_input_data(input_data):
     return run_topsis(input_data)
-

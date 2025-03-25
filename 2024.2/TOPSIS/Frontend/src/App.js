@@ -13,7 +13,7 @@ function App() {
 
         <Route path="/TopsisForm" element={<TopsisFormPage />} />
 
-        <Route path="/result" element={<ResultPage />} />
+        <Route path="/Result" element={<ResultPage />} />
 
       </Routes>
     </Router>
