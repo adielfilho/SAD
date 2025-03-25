@@ -93,7 +93,7 @@ function TopsisFormPage() {
       </figure>
 
       <div className="forms-container">
-        <h1>Preencha os Inputs para o Método TOPSIS</h1>
+        <h1>Insira os Dados para o Método TOPSIS</h1>
         <p>
           Preencha as informações necessárias para calcular o método TOPSIS. 
           Insira alternativas, critérios, a matriz de performance, os tipos de critérios, os pesos e a métrica de distância desejada.
@@ -113,7 +113,7 @@ function TopsisFormPage() {
         <fieldset>
           <label>Critérios</label>
           <div className="input-box">
-            <input type="text" className="input-addition" placeholder="Enter and add criteria" />
+            <input type="text" className="input-addition" placeholder="Preencha e adicione critérios" />
             <button className="button-addition" onClick={addCriterion}>Adicionar +</button>
           </div>
           <ul className="filled-inputs-list">
@@ -147,6 +147,7 @@ function TopsisFormPage() {
                   <span>{crit}</span>
                   <input
                     type="number"
+                    placeholder="0"
                     onChange={(e) => updateCriterionWeight(crit, e.target.value)}
                   />
                 </div>
@@ -158,23 +159,26 @@ function TopsisFormPage() {
         {alternatives.length > 0 && criteria.length > 0 && (
           <>
             <label>Matriz de Performance</label>
-            {alternatives.map((alt, idx) => (
-              <fieldset className="matrix-container" key={idx}>
-                <span>Alternative: {alt}</span>
-                <div className="list-matrix">
-                  {criteria.map((crit, cidx) => (
-                    <div key={cidx} className="item-matrix">
-                      <label>{crit}: </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        onChange={(e) => updateMatrix(alt, crit, e.target.value)}
-                      />
+            <div className="matrix-container">
+                {alternatives.map((alt, idx) => (
+                  <fieldset className="fieldset-matrix" key={idx}>
+                    <span>Alternativa: {alt}</span>
+                    <div className="list-matrix">
+                      {criteria.map((crit, cidx) => (
+                        <div key={cidx} className="item-matrix">
+                          <label>{crit} </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder="0"
+                            onChange={(e) => updateMatrix(alt, crit, e.target.value)}
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </fieldset>
-            ))}
+                  </fieldset>
+                ))}
+            </div>
           </>
         )}
 
@@ -184,19 +188,20 @@ function TopsisFormPage() {
             <div className="">
               <input
                 type="number"
-                className="input"
                 value={distanceMetric}
                 onChange={(e) => setDistanceMetric(parseInt(e.target.value) || 0)}
-                placeholder="Enter the distance metric"
+                placeholder="Preencha a Métrica de Distância"
               />
             </div>
           </fieldset>
         )}
 
       {(alternatives.length > 0 && criteria.length > 0) && (
-        <button className="button primary submit" onClick={handleSubmit}>
-          Executar
-        </button>
+        <div className="u-flex-right">
+           <button className="button primary submit" onClick={handleSubmit}>
+          Enviar Dados
+          </button>
+        </div>
       )}
       </div>
     </div>
