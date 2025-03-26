@@ -183,8 +183,8 @@ def run_vikor_decision(input_data: Dict[str, Any]) -> Dict[str, Any]:
                 denom: float = f_star - f_minus if f_star != f_minus else 1e-10
                 normalized: float = (f_star - f_val) / denom
             else:
-                denom = f_val - f_star if f_val != f_star else 1e-10
-                normalized = (f_val - f_star) / denom
+               denom = f_minus - f_star if f_minus != f_star else 1e-10
+               normalized = (f_val - f_star) / denom
             s_sum += crit.weight * normalized
             r_max = max(r_max, crit.weight * normalized)
         S[alt.name] = s_sum
@@ -215,28 +215,44 @@ def run_vikor_decision(input_data: Dict[str, Any]) -> Dict[str, Any]:
 if __name__ == "__main__":
     # Exemplo de entrada para execução do método VIKOR
     input_example: Dict[str, Any] = {
-        "method": "VIKOR",
-        "parameters": {
-            "alternatives": ["A1", "A2", "A3"],
-            "criteria": ["C1", "C2", "C3"],
-            "performance_matrix": {
-                "A1": [0.7, 0.5, 0.8],
-                "A2": [0.6, 0.7, 0.6],
-                "A3": [0.8, 0.6, 0.7]
-            },
-            "criteria_types": {
-                "C1": "max",
-                "C2": "min",
-                "C3": "max"
-            },
-            "weights": {
-                "C1": 0.4,
-                "C2": 0.3,
-                "C3": 0.3
-            },
-            "v": 0.5
-        }
-    }
+  "method": "VIKOR",
+  "parameters": {
+    "alternatives": ["A1", "A2", "A3", "A4", "A5", "A6"],
+    "criteria": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"],
+    "performance_matrix": {
+      "A1": [4184.3, 2914.0, 407.2, 251.0, 195, 244, 15, 2.41],
+      "A2": [5211.9, 3630.0, 501.7, 308.3, 282, 346, 21, 1.41],
+      "A3": [5021.3, 3920.5, 504.0, 278.6, 12, 56, 3, 4.42],
+      "A4": [5566.1, 3957.9, 559.5, 335.3, 167, 268, 16, 3.36],
+      "A5": [5060.5, 3293.5, 514.1, 284.2, 69, 90, 7, 4.04],
+      "A6": [4317.9, 2925.9, 432.8, 239.3, 12, 55, 3, 4.36]
+    },
+    "criteria_types": {
+      "C1": "max",
+      "C2": "min",
+      "C3": "max",
+      "C4": "max",
+      "C5": "min",
+      "C6": "min",
+      "C7": "min",
+      "C8": "max"
+    },
+    "weights": {
+      "C1": 0.125,
+      "C2": 0.125,
+      "C3": 0.125,
+      "C4": 0.125,
+      "C5": 0.125,
+      "C6": 0.125,
+      "C7": 0.125,
+      "C8": 0.125
+    },
+    "v": 0.5
+  }
+}
+
+
+
 
     results: Dict[str, Any] = run_vikor_decision(input_example)
     print(json.dumps(results, indent=2))
