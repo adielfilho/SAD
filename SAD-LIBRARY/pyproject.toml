@@ -1,0 +1,17 @@
+[project]
+name = "sad_cin"
+version = "0.1.0"
+description = "Sistemas de Apoio à Decisão multi critério, desenvolvida no Centro de Informática da Universidade Federal de Pernambuco"
+authors = [
+    {name = "Adiel Filho"}
+]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

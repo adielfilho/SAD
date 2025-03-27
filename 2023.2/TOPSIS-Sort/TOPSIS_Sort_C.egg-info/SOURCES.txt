@@ -1,6 +1,0 @@
-LICENSE
-README.md
-setup.py
-TOPSIS_Sort_C.egg-info/PKG-INFO
-TOPSIS_Sort_C.egg-info/SOURCES.txt
-TOPSIS_Sort_C.egg-info/requires.txt
