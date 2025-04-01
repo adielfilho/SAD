@@ -40,5 +40,5 @@ resultado = ft.proximity_coefficient(dist_pos, dist_neg)
 
 # Prepara a Saída
 resultado.index = config['suppliers']
-print("\nResultado Final:")
+resultado['Classificação'] = resultado.idxmax(axis=1) # adiciona uma coluna para a classificação das escolhas
 print(resultado)
