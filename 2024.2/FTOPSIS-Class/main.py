@@ -41,4 +41,22 @@ resultado = ft.proximity_coefficient(dist_pos, dist_neg)
 # Prepara a Saída
 resultado.index = config['suppliers']
 resultado['Classificação'] = resultado.idxmax(axis=1) # adiciona uma coluna para a classificação das escolhas
+
+# prepara para retornar em json
+output_json = {
+    "results": {
+        supplier: {
+            "scores": {col: resultado.at[supplier, col] for col in resultado.columns if col != 'Classificação'},
+            "classification": resultado.at[supplier, 'Classificação']
+        }
+        for supplier in resultado.index
+    }
+}
+
+# Visualização para testes
+print("Resultado Final:")
 print(resultado)
+
+# Imprime o JSON no formato do retorno
+print("\nSaída em JSON:")
+print(json.dumps(output_json, indent=4, ensure_ascii=False))
