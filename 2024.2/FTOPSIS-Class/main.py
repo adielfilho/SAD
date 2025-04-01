@@ -1,4 +1,4 @@
-from ftopsis_class import CriteriaType, FTOPSISClass as ft
+from ftopsis_class.core import CriteriaType, FTOPSISClass as ft
 import numpy as np
 import pandas as pd
 import json
@@ -49,7 +49,7 @@ def run_ftopsis(matriz_decisao, matriz_perfil, pesos, tipo_criterio, mapeamento_
     dist_pos, dist_neg = ft.distance_calculation(matriz_final, sol_pos, sol_neg)
     return ft.proximity_coefficient(dist_pos, dist_neg)
 
-def main(input_file: str = "triangular.json"):
+def main(input_file: str = "trapezoidal.json"):
     # Carrega configuração
     config = load_config(input_file)
     
