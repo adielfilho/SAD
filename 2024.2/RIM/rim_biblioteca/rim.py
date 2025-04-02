@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np 
 import json
 
 #essa ta mais certa
