@@ -1,0 +1,18 @@
+[project]
+name = "topsis_cin"
+version = "0.1.1"
+description = "Biblioteca Topsis"
+authors = [
+    {name = "Lucas Luís, Mateus da Silva"}
+]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy==1.26.4"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
