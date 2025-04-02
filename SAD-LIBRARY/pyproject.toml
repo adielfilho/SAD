@@ -1,6 +1,6 @@
 [project]
 name = "sad_cin"
-version = "0.2.0"
+version = "0.3.0"
 description = "Sistemas de Apoio à Decisão multi critério, desenvolvida no Centro de Informática da Universidade Federal de Pernambuco"
 authors = [
     {name = "Adiel Filho"}
@@ -10,7 +10,8 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "vikor-cin==0.1.0",
-    "topsis-cin==0.1.1"
+    "topsis-cin==0.1.1",
+    "rim-cin==0.1.0",
 ]
 
 
