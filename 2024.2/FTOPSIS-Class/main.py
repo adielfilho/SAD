@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, Dict, Any, Union
 from utils.format_output import format_to_json
+from ftopsis_class.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
 
 class FTOPSISProcessor:
     
@@ -24,12 +25,10 @@ class FTOPSISProcessor:
     @staticmethod
     def print_trapezoidal_results(elements: list, closeness: dict, 
                                 classification: dict, profile_mapping: dict) -> None:
-        """Imprime os resultados do FTOPSIS trapezoidal formatado"""
         profiles = list(profile_mapping.values())
         
         elem_width = 10
         profile_width = 15
-        class_width = 15
         
         # Cabeçalho
         header = f"{'Element':<{elem_width}}"
@@ -52,7 +51,6 @@ class FTOPSISProcessor:
 
     @staticmethod
     def detect_fuzzy_type(data: Dict[str, Any]) -> str:
-        """Detect if the JSON contains triangular or trapezoidal fuzzy numbers"""
         if 'linguistic_terms' in data:
             first_term = next(iter(data['linguistic_terms'].values()))
             if len(first_term) == 4:
@@ -65,9 +63,7 @@ class FTOPSISProcessor:
         
         raise ValueError("Could not determine fuzzy number type from JSON structure")
 
-def trapezoidal_ftopsis_class(data: Dict[str, Any]) -> None:
-    from ftopsis_class.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
-
+def trapezoidal_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
     criteria_type = {k: CriteriaType[v] for k, v in data['criteria_type'].items()}
     
     ftopsis = FTOPSISClass(
@@ -82,13 +78,32 @@ def trapezoidal_ftopsis_class(data: Dict[str, Any]) -> None:
     
     closeness, classification = ftopsis.run()
     
-    print("\nRunning FTOPSIS-Class...")
-    FTOPSISProcessor.print_trapezoidal_results(
-        elements=data['elements'],
-        closeness=closeness,
-        classification=classification,
-        profile_mapping=data['profile_mapping']
-    )
+    profiles = list(data['profile_mapping'].values())
+    result_data = {
+        element: {
+            **{profile: closeness[element][profile] for profile in profiles},
+            'Classification': classification[element][0]
+        }
+        for element in data['elements']
+    }
+    
+    result = pd.DataFrame.from_dict(result_data, orient='index')
+    
+    json_output = {
+        element: {
+            'scores': {profile: float(closeness[element][profile]) for profile in profiles},
+            'classification': classification[element][0],
+        }
+        for element in data['elements']
+    }
+
+    print("\nResultados:\n")
+    print(result)
+    
+    print("\nJSON Output:")
+    print(json.dumps(json_output, indent=2, ensure_ascii=False))
+
+    return result, json_output
 
 def triangular_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
     from ftopsis_class.triangular_core import CriteriaType, FTOPSISClass as TriFTOPSIS
@@ -133,11 +148,8 @@ def triangular_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
 
 
 def main() -> None:
-    print("FTOPSIS Classification System")
-    print("------------------------------")
-    
     while True:
-        file_path = 'data/json/triangular_input.json'
+        file_path = 'data/json/trapezoidal_input.json'
         
         try:
             data = FTOPSISProcessor.load_json_data(file_path)
