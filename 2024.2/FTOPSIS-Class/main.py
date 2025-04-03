@@ -140,7 +140,7 @@ def triangular_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
     pos_dist, neg_dist = TriFTOPSIS.distance_calculation(final_matrix, pos_sol, neg_sol)
     result = TriFTOPSIS.proximity_coefficient(pos_dist, neg_dist)
 
-    result.index = data['suppliers']
+    result.index = data['alternatives']
     result['Classificação'] = result.idxmax(axis=1)
     json_output = format_to_json(result)
 
