@@ -10,7 +10,7 @@ Este projeto implementa o método **TOPSIS** (Technique for Order Preference by 
 ## Requisitos
 Antes de rodar o código, instale as dependências necessárias. Você pode fazer isso com o comando:
 ```bash
-pip install -r requirements.txt
+pip install numpy
 ```
 
 ## Como Usar
@@ -24,6 +24,13 @@ O código recebe uma entrada no formato JSON ou dicionário Python contendo:
   - **performance_matrix**: Dicionário onde cada alternativa possui uma lista de valores para cada critério.
   - **criteria_types**: Especificação se o critério é de **custo (min)** ou **benefício (max)**.
   - **weights**: Pesos de cada critério.
+  - **distance_metric** *(opcional)*: Define a métrica de distância a ser usada para calcular a proximidade das alternativas:
+  - `"1"` → **Distância de Manhattan** (soma das diferenças absolutas entre os valores)
+  - `"2"` *(padrão)* → **Distância Euclidiana** (raiz quadrada da soma dos quadrados das diferenças)
+  - `"inf"` → **Distância de Chebyshev** (maior diferença absoluta entre os valores)
+
+Se não especificado, o código usará **distância Euclidiana** (`"2"`) por padrão.
+
 
 #### Exemplo de Entrada:
 ```json
