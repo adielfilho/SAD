@@ -2,14 +2,16 @@
 
 Este projeto implementa o **Weighted Fuzzy Reference Ideal Method (W-FRIM)**, uma abordagem multicritério baseada em lógica fuzzy para auxiliar na **avaliação e ranqueamento de alternativas** considerando pesos de critérios, referências ideais e estruturas de preferência.
 
-## 🧠 Como Funciona
+## Como Funciona
 
-O método recebe quatro conjuntos de dados:
+O método recebe um único arquivo JSON contendo:
 
-1. **Matriz de decisão fuzzy** (`table1_fuzzy_decision_matrix.csv`)
-2. **Faixas de valores e referências ideais** (`table2_range_reference_ideal.csv`)
-3. **Lambdas de preferência para cada critério** (`table3_preference_structure.csv`)
-4. **Pesos dos critérios** (`table4_criterion_weights.csv`)
+- **Critérios**
+- **Alternativas** com valores fuzzy por critério
+- **Faixas de valores esperados** por critério
+- **Referências ideais fuzzy**
+- **Estrutura de preferência (λ)** por critério
+- **Pesos fuzzy** por critério
 
 Esses dados são processados para:
 
@@ -18,20 +20,19 @@ Esses dados são processados para:
 - Calcular os índices relativos de cada alternativa;
 - Gerar o ranqueamento das alternativas.
 
-## 📁 Estrutura dos Arquivos
+
+## Estrutura dos Arquivos
 
 ```
 .
 ├── data/
-│   ├── table1_fuzzy_decision_matrix.csv
-│   ├── table2_range_reference_ideal.csv
-│   ├── table3_preference_structure.csv
-│   └── table4_criterion_weights.csv
+│   ├── input.json
+├── utils.py
 ├── main.py
 └── README.md
 ```
 
-## 📥 Instalação
+## Instalação
 
 Requisitos:
 - Python 3.7+
@@ -52,65 +53,80 @@ Rode o script principal com:
 python main.py
 ```
 
-A saída incluirá:
+## Exemplo de Entrada (`input.json`)
 
-- Matriz de decisão normalizada
-- Matriz ponderada
-- Índices relativos para cada alternativa
-- Ranqueamento final
-
-## 📌 Exemplo de Saída
-
+```json
+{
+  "method": "W-FRIM",
+  "parameters": {
+    "criteria": ["C1", "C2", "C3", "C4", "C5", "C6"],
+    "performance_matrix": [
+      {
+        "name": "A1",
+        "values": {
+          "C1": [3.3712, 3.44, 3.5088],
+          "C2": [2.9890, 3.05, 3.1110],
+          "C3": [12.6518, 12.91, 13.1682],
+          "C4": [0.5350, 0.546, 0.5569],
+          "C5": [0.1274, 0.13, 0.1326],
+          "C6": [1.0141, 1.0348, 1.0555]
+        }
+      }
+      // outras alternativas...
+    ],
+    "range": {
+      "C1": [[2.4304, 2.4800, 2.5296], [3.9396, 4.0200, 4.1004]]
+      // outros critérios...
+    },
+    "reference_ideal": {
+      "C1": [[3.4300, 3.500, 3.5700], [3.9396, 4.0200, 4.1004]]
+      // outros critérios...
+    },
+    "preferences": {
+      "C1": 1,
+      "C2": 1,
+      // ...
+    },
+    "weights": {
+      "C1": [0.1568, 0.1600, 0.1632],
+      // ...
+    }
+  }
+}
 ```
-Normalized Decision Matrix (N):
-[[0.83 0.91 0.77]
- [0.62 0.80 0.70]
- [0.90 0.95 0.85]]
 
-Weighted Normalized Decision Matrix (P):
-[[0.25 0.36 0.23]
- [0.19 0.32 0.21]
- [0.27 0.38 0.28]]
+## Exemplo de Saída (`output.json`)
 
-Relative Indices for Alternatives:
-Alternative A1: 0.621574
-Alternative A2: 0.482113
-Alternative A3: 0.841997
-
-Ranking of Alternatives (Best First):
-Rank 1: Alternative A3 (Relative Index = 0.841997)
-Rank 2: Alternative A1 (Relative Index = 0.621574)
-Rank 3: Alternative A2 (Relative Index = 0.482113)
+```json
+{
+  "method": "W-FRIM",
+  "results": {
+    "ranking": ["A8", "A2", "A4", "A5", "A7", "A9", "A10", "A1", "A3", "A6", "A11"],
+    "scores": {
+      "A1": 0.379715,
+      "A2": 0.539774,
+      "A3": 0.377886,
+      "A4": 0.493291,
+      "A5": 0.460452,
+      "A6": 0.358407,
+      "A7": 0.441508,
+      "A8": 0.577422,
+      "A9": 0.416644,
+      "A10": 0.413317,
+      "A11": 0.208098
+    },
+    "normalized_weights": {
+      "A1": [0.112106, 0.0, 0.16, 0.008508, 0.0, 0.0],
+      "A2": [0.126045, 0.081958, 0.11354, 0.16, 0.05298, 0.0],
+      // ... até A11
+    }
+  }
+}
 ```
 
-## 🧪 Estrutura dos Dados
-
-- **table1_fuzzy_decision_matrix.csv**:
-  ```
-  C1_l,C1_m,C1_u,C2_l,C2_m,C2_u,...
-  3,4,5,2,3,4,...
-  ```
-
-- **table2_range_reference_ideal.csv**:
-  ```
-  Range_A_l,Range_A_m,Range_A_u,RefIdeal_C_l,RefIdeal_C_m,RefIdeal_C_u,RefIdeal_D_l,RefIdeal_D_m,RefIdeal_D_u
-  ```
-
-- **table3_preference_structure.csv**:
-  ```
-  Criterion,Lambda
-  1,0.6
-  ```
-
-- **table4_criterion_weights.csv**:
-  ```
-  Criterion,Weight_l,Weight_m,Weight_u
-  ```
-
-## 🧠 Referência Teórica
+## Referência Teórica
 
 A implementação do método está baseado no artigo W-FRIM: : A weighted fuzzy RIM approach.
 
-## 📄 Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
+## Autores
+Victoria Pantoja - vpa@cin.ufpe.br
