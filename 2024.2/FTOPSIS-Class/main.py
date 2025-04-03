@@ -1,76 +1,124 @@
-from ftopsis_class.core import CriteriaType, FTOPSISClass as ft
+import json
 import numpy as np
 import pandas as pd
-import json
+from typing import Tuple, Dict, Any
 from utils.format_output import format_to_json
 
-# Carrega o Json
-def load_config(file_path: str) -> dict:
-    with open(file_path) as f:
-        return json.load(f)
-
-# Prepara todas os dados necessários
-def prepare_data(config: dict) -> tuple:
-    # Variáveis linguísticas
-    vl_alternativas = {k: np.array(v) for k, v in config['linguistic_variables_alternatives'].items()}
-    vl_pesos = {k: np.array(v) for k, v in config['linguistic_variables_weights'].items()}
+class FTOPSISProcessor:
     
-    # Matrizes
-    matriz_decisao = pd.DataFrame({
-        k: [vl_alternativas[val] for val in v] 
+    @staticmethod
+    def load_json_data(file_path: str) -> Dict[str, Any]:
+        try:
+            with open(file_path, 'r') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Input file {file_path} not found")
+        except json.JSONDecodeError:
+            raise ValueError(f"Invalid JSON format in {file_path}")
+
+    @staticmethod
+    def print_results(result: pd.DataFrame, title: str = "Results") -> None:
+        print(f"\n{title}:")
+        print(result.to_string(index=True, float_format="%.5f"))
+
+
+def trapezoidal_ftopsis_class(input_path: str = 'data/json/trapezoidal_input.json') -> None:
+    from ftopsis_class.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
+
+    data = FTOPSISProcessor.load_json_data(input_path)
+    
+    criteria_type = {k: CriteriaType[v] for k, v in data['criteria_type'].items()}
+    
+    ftopsis = FTOPSISClass(
+        linguistic_terms=data['linguistic_terms'],
+        weights=data['weights'],
+        criteria_type=criteria_type,
+        elements=data['elements'],
+        criteria=data['criteria'],
+        fuzzy_decision_matrix=data['fuzzy_decision_matrix'],
+        reference_matrix=data['reference_matrix']
+    )
+    
+    closeness, classification = ftopsis.run()
+    
+    print("\nRunning FTOPSIS-Class (corrected final version)...")
+    header = f"{'Element':<10}{'Conservative':<12}{'Moderate':<10}{'Bold':<10}{'Aggressive':<12}{'Classification':<15}"
+    print(header)
+    
+    for element in data['elements']:
+        cc = closeness[element]
+        best_profile, best_cc = classification[element]
+        print(
+            f"{element:<10}"
+            f"{cc['Conservative']:10.5f}\t"
+            f"{cc['Moderate']:10.5f}\t"
+            f"{cc['Bold']:10.5f}\t"
+            f"{cc['Aggressive']:10.5f}\t"
+            f"{best_profile} ({best_cc:.5f})"
+        )
+
+
+def triangular_ftopsis_class(input_path: str = "data/json/triangular_input.json") -> Tuple[pd.DataFrame, Dict]:
+    from ftopsis_class.triangular_core import CriteriaType, FTOPSISClass as TriFTOPSIS
+
+    config = FTOPSISProcessor.load_json_data(input_path)
+
+    linguistic_vars_alt = {k: np.array(v) for k, v in config['linguistic_variables_alternatives'].items()}
+    linguistic_vars_weight = {k: np.array(v) for k, v in config['linguistic_variables_weights'].items()}
+
+    decision_matrix = pd.DataFrame({
+        k: [linguistic_vars_alt[val] for val in v]
         for k, v in config['decision_matrix'].items()
     })
-    matriz_perfil = pd.DataFrame({
-        k: [vl_alternativas[val] for val in v] 
+    
+    profile_matrix = pd.DataFrame({
+        k: [linguistic_vars_alt[val] for val in v]
         for k, v in config['profile_matrix'].items()
     })
-    
-    # Pesos e critérios
-    pesos = pd.DataFrame({k: [vl_pesos[v[0]]] for k, v in config['weights'].items()})
-    tipo_criterio = {k: CriteriaType[v] for k, v in config['criteria_type'].items()}
-    mapeamento_perfil = {int(k): v for k, v in config['profile_mapping'].items()}
-    
-    return matriz_decisao, matriz_perfil, pesos, tipo_criterio, mapeamento_perfil
 
-# Executa o FTOPSIS-CLASS
-def run_ftopsis(matriz_decisao, matriz_perfil, pesos, tipo_criterio, mapeamento_perfil) -> pd.DataFrame:
-    # Normalização e ponderação
-    matriz_norm = ft.normalize_matrix(matriz_decisao, tipo_criterio)
-    matriz_pond = ft.weigh_matrix(matriz_norm, pesos)
-    matriz_final = ft.round_weighted_normalized_matrix(matriz_pond)
+    weights = pd.DataFrame({k: [linguistic_vars_weight[v[0]]] for k, v in config['weights'].items()})
+    criteria_type = {k: CriteriaType[v] for k, v in config['criteria_type'].items()}
+    profile_mapping = {int(k): v for k, v in config['profile_mapping'].items()}
 
-    # Processamento do perfil
-    matriz_perfil_norm = ft.normalize_matrix(matriz_perfil, tipo_criterio)
-    matriz_perfil_pond = ft.weigh_matrix(matriz_perfil_norm, pesos)
-    matriz_perfil_final = ft.round_weighted_normalized_matrix(matriz_perfil_pond)
+    norm_matrix = TriFTOPSIS.normalize_matrix(decision_matrix, criteria_type)
+    weighted_matrix = TriFTOPSIS.weigh_matrix(norm_matrix, weights)
+    final_matrix = TriFTOPSIS.round_weighted_normalized_matrix(weighted_matrix)
 
-    # Cálculo das soluções ideais
-    sol_pos, sol_neg = ft.ideal_solution(matriz_perfil_final, mapeamento_perfil)
-    dist_pos, dist_neg = ft.distance_calculation(matriz_final, sol_pos, sol_neg)
-    return ft.proximity_coefficient(dist_pos, dist_neg)
+    norm_profile = TriFTOPSIS.normalize_matrix(profile_matrix, criteria_type)
+    weighted_profile = TriFTOPSIS.weigh_matrix(norm_profile, weights)
+    final_profile = TriFTOPSIS.round_weighted_normalized_matrix(weighted_profile)
 
-def main(input_file: str = "trapezoidal.json"):
-    # Carrega configuração
-    config = load_config(input_file)
+    pos_sol, neg_sol = TriFTOPSIS.ideal_solution(final_profile, profile_mapping)
+    pos_dist, neg_dist = TriFTOPSIS.distance_calculation(final_matrix, pos_sol, neg_sol)
+    result = TriFTOPSIS.proximity_coefficient(pos_dist, neg_dist)
+
+    result.index = config['suppliers']
+    result['Classificação'] = result.idxmax(axis=1)
+    json_output = format_to_json(result)
+
+    FTOPSISProcessor.print_results(result)
+    return result, json_output
+
+
+def main() -> None:
+    print("FTOPSIS Classification System")
+    print("------------------------------")
     
-    # Prepara dados
-    matriz_decisao, matriz_perfil, pesos, tipo_criterio, mapeamento_perfil = prepare_data(config)
-    
-    # Executa FTOPSIS
-    resultado = run_ftopsis(matriz_decisao, matriz_perfil, pesos, tipo_criterio, mapeamento_perfil)
-    resultado.index = config['suppliers']
-    resultado['Classificação'] = resultado.idxmax(axis=1)
-    
-    # Formata saída
-    output_json = format_to_json(resultado)
-    
-    # Exibe resultados
-    print("Resultado Final:")
-    print(resultado)
-    print("\nSaída em JSON:")
-    print(json.dumps(output_json, indent=4, ensure_ascii=False))
-    
-    return resultado, output_json
+    while True:
+        choice = input("Escolha o tamanho do número fuzzy:\n[3] Triangular\n[4] Trapezoidal\n> ")
+        
+        if choice == "3":
+            triangular_ftopsis_class()
+            break
+        elif choice == "4":
+            trapezoidal_ftopsis_class()
+            break
+        print("Entrada inválida, por favor insira 3 ou 4.\n")
+
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"\nErro: {str(e)}")
+        exit(1)

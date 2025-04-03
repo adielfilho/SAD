@@ -2,9 +2,11 @@ import pandas as pd
 import numpy as np
 from enum import Enum
 
+
 class CriteriaType(Enum):
     Cost = 0
     Benefit = 1
+
 
 class FTOPSISClass:
     @staticmethod
