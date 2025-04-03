@@ -10,7 +10,7 @@ Este projeto implementa o método **TOPSIS** (Technique for Order Preference by 
 ## Requisitos
 Antes de rodar o código, instale as dependências necessárias. Você pode fazer isso com o comando:
 ```bash
-pip install -r requirements.txt
+pip install numpy
 ```
 
 ## Como Usar
@@ -24,23 +24,40 @@ O código recebe uma entrada no formato JSON ou dicionário Python contendo:
   - **performance_matrix**: Dicionário onde cada alternativa possui uma lista de valores para cada critério.
   - **criteria_types**: Especificação se o critério é de **custo (min)** ou **benefício (max)**.
   - **weights**: Pesos de cada critério.
+  - **`distance_metric`** *(opcional)*: Define a métrica de distância a ser usada para calcular a proximidade das alternativas:
+  - `"1"` → **Distância de Manhattan** (soma das diferenças absolutas entre os valores)
+  - `"2"` *(padrão)* → **Distância Euclidiana** (raiz quadrada da soma dos quadrados das diferenças)
+  - `"inf"` → **Distância de Chebyshev** (maior diferença absoluta entre os valores)
+
+Se não especificado, o código usará **distância Euclidiana** (`"2"`) por padrão.
+
 
 #### Exemplo de Entrada:
 ```json
 {
   "method": "TOPSIS",
   "parameters": {
-    "alternatives": ["Palio", "HB20", "Corolla"],
-    "criteria": ["Consumo", "Conforto", "Preço", "Reputação"],
+    "alternatives": ["A1", "A2", "A3"],
+    "criteria": ["C1", "C2", "C3"],
     "performance_matrix": {
-      "Palio": [15, 6, 25000, 7],
-      "HB20": [12, 7, 35000, 7],
-      "Corolla": [10, 9, 55000, 8]
+      "A1": [7, 9, 8],
+      "A2": [6, 8, 7],
+      "A3": [8, 7, 9]
     },
-    "criteria_types": {"Consumo": "min", "Conforto": "max", "Preço": "min", "Reputação": "max"},
-    "weights": {"Consumo": 0.3, "Conforto": 0.05, "Preço": 0.6, "Reputação": 0.05}
+    "criteria_types": {
+      "C1": "max",
+      "C2": "max",
+      "C3": "max"
+    },
+    "weights": {
+      "C1": 0.5,
+      "C2": 0.3,
+      "C3": 0.2
+    },
+    "distance_metric": "2"
   }
 }
+
 ```
 
 ### Execução do Código
@@ -68,12 +85,36 @@ O código retorna um dicionário contendo:
 {
   "method": "TOPSIS",
   "results": {
-    "positive_ideal_solution": {"Consumo": 10.0, "Conforto": 9.0, "Preço": 25000.0, "Reputação": 8.0},
-    "negative_ideal_solution": {"Consumo": 15.0, "Conforto": 6.0, "Preço": 55000.0, "Reputação": 7.0},
-    "distance_to_pis": {"Palio": 0.7, "HB20": 0.5, "Corolla": 0.3},
-    "distance_to_nis": {"Palio": 0.3, "HB20": 0.5, "Corolla": 0.7},
-    "topsis_score": {"Palio": 0.3, "HB20": 0.5, "Corolla": 0.7},
-    "ranking": ["Corolla", "HB20", "Palio"]
+    "positive_ideal_solution": {
+      "C1": 0.3277,
+      "C2": 0.1938,
+      "C3": 0.1292
+    },
+    "negative_ideal_solution": {
+      "C1": 0.2458,
+      "C2": 0.1508,
+      "C3": 0.1005
+    },
+    "distance_to_pis": {        
+      "A1": 0.0434,
+      "A2": 0.0894,
+      "A3": 0.0431
+    },
+    "distance_to_nis": {
+      "A1": 0.0612,
+      "A2": 0.0215,
+      "A3": 0.0868
+    },
+    "topsis_score": {
+      "A1": 0.5849,
+      "A2": 0.1941,
+      "A3": 0.6684
+    },
+    "ranking": [
+      "A3",
+      "A1",
+      "A2"
+    ]
   }
 }
 ```
