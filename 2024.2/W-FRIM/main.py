@@ -1,55 +1,12 @@
-import pandas as pd
 import numpy as np
 import math
-
-def get_decision_matrix(df_table1):
-    decision_matrix = []
-    num_criteria = len([col for col in df_table1.columns if col.endswith("_l")])
-
-    for _, row in df_table1.iterrows():
-        alt_fuzzy_numbers = []
-        for crit in range(1, num_criteria + 1):
-            col_l = f"C{crit}_l"
-            col_m = f"C{crit}_m"
-            col_u = f"C{crit}_u"
-            fuzzy_num = (row[col_l], row[col_m], row[col_u])
-            alt_fuzzy_numbers.append(fuzzy_num)
-        decision_matrix.append(alt_fuzzy_numbers)
-    return decision_matrix
-
-
-def get_lower_bound_ranges_and_reference_ideal_pairs(df_table2):
-    """
-    For each criterion, we extract:
-    lower_bound_range = (Range_A_l, Range_A_m, Range_A_u)
-    reference_ideal_pair = ((RefIdeal_C_l, RefIdeal_C_m, RefIdeal_C_u), (RefIdeal_D_l, RefIdeal_D_m, RefIdeal_D_u))
-    """
-    lower_bound_ranges = []
-    reference_ideal_pairs = []
-
-    for _, row in df_table2.iterrows():
-        lower_bound = (row["Range_A_l"], row["Range_A_m"], row["Range_A_u"])
-        ref_lower = (row["RefIdeal_C_l"], row["RefIdeal_C_m"], row["RefIdeal_C_u"])
-        ref_upper = (row["RefIdeal_D_l"], row["RefIdeal_D_m"], row["RefIdeal_D_u"])
-        lower_bound_ranges.append(lower_bound)
-        reference_ideal_pairs.append((ref_lower, ref_upper))
-
-    return lower_bound_ranges, reference_ideal_pairs
-
-
-def get_preference_lambdas(df_table3):
-    df_table3_sorted = df_table3.sort_values(by="Criterion")
-    preference_lambdas = df_table3_sorted["Lambda"].tolist()
-    return preference_lambdas
-
-
-def get_criterion_weights(df_table4):
-    df_weights = df_table4.sort_values("Criterion")
-    criterion_weights = []
-    for _, row in df_weights.iterrows():
-        weight = (row["Weight_l"], row["Weight_m"], row["Weight_u"])
-        criterion_weights.append(weight)
-    return criterion_weights
+import json
+from utils import (
+    get_decision_matrix_from_json,
+    get_lower_bound_ranges_and_reference_ideal_pairs_from_json,
+    get_preference_lambdas_from_json,
+    get_criterion_weights_from_json,
+)
 
 
 class WeightedFuzzyReferenceIdealMethod:
@@ -214,19 +171,16 @@ class WeightedFuzzyReferenceIdealMethod:
             self.weighted_normalized_matrix,
         )
 
-
+# --- Main Execution Block with JSON ---
 if __name__ == "__main__":
-    df_table1 = pd.read_csv("data/table1_fuzzy_decision_matrix.csv")
-    df_table2 = pd.read_csv("data/table2_range_reference_ideal.csv")
-    df_table3 = pd.read_csv("data/table3_preference_structure.csv")
-    df_table4 = pd.read_csv("data/table4_criterion_weights.csv")
-    
-    decision_matrix = get_decision_matrix(df_table1)
-    lower_bound_ranges, reference_ideal_pairs = (
-        get_lower_bound_ranges_and_reference_ideal_pairs(df_table2)
-    )
-    preference_lambdas = get_preference_lambdas(df_table3)
-    criterion_weights = get_criterion_weights(df_table4)
+    with open("data/input.json") as f:
+        json_data = json.load(f)
+
+    criteria = json_data["criteria"]
+    decision_matrix = get_decision_matrix_from_json(json_data["alternatives"], criteria)
+    lower_bound_ranges, reference_ideal_pairs = get_lower_bound_ranges_and_reference_ideal_pairs_from_json(json_data["range"], json_data["reference_ideal"], criteria)
+    preference_lambdas = get_preference_lambdas_from_json(json_data["preferences"], criteria)
+    criterion_weights = get_criterion_weights_from_json(json_data["weights"], criteria)
 
     model = WeightedFuzzyReferenceIdealMethod(
         decision_matrix,
@@ -238,7 +192,6 @@ if __name__ == "__main__":
 
     ranking, relative_indices, normalized_matrix, weighted_matrix = model.run_w_frim()
 
-    # np.set_printoptions(precision=4, suppress=True)
     print("Normalized Decision Matrix (N):")
     print(normalized_matrix)
     print("\nWeighted Normalized Decision Matrix (P):")
