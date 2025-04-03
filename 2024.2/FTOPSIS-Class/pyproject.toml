@@ -2,7 +2,7 @@
 name = "ftopsis_class"
 version = "0.1.0"
 description = ""
-authors = ["Lucas Campos <lcmc@cin.ufpe.br>"]
+authors = ["José Ronaldo <jrss@cin.ufpe.br>", Luiz Henrique <lhbas@cin.ufpe.br>]
 
 [tool.poetry.dependencies]
 python = "^3.10"
