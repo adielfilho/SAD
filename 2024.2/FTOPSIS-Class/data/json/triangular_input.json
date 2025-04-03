@@ -1,0 +1,50 @@
+{
+  "linguistic_variables_alternatives": {
+      "MR": [0.0, 0.0, 2.5],
+      "R": [0.0, 2.5, 5.0],
+      "M": [2.5, 5.0, 7.5],
+      "B": [5.0, 7.5, 10.0],
+      "MB": [7.5, 10.0, 10.0]
+  },
+  "linguistic_variables_weights": {
+      "NI": [0.2, 0.2, 0.4],
+      "PI": [0.2, 0.4, 0.6],
+      "IM": [0.4, 0.6, 0.8],
+      "I": [0.6, 0.8, 1.0],
+      "MI": [0.8, 0.8, 1.0]
+  },
+  "decision_matrix": {
+      "C1": ["MB", "B", "M", "R", "MR", "MB", "MB", "R", "B"],
+      "C2": ["MB", "B", "M", "R", "MR", "R", "MR", "B", "MR"],
+      "C3": ["MB", "B", "M", "R", "MR", "B", "B", "B", "R"],
+      "C4": ["MB", "B", "M", "R", "MR", "MB", "MB", "B", "MB"]
+  },
+  "profile_matrix": {
+      "C1": ["MB", "B", "R"],
+      "C2": ["B", "M", "R"],
+      "C3": ["B", "M", "MR"],
+      "C4": ["MB", "B", "M"]
+  },
+  "profile_mapping": {
+      "0": "Preferível",
+      "1": "Aceitável",
+      "2": "Inaceitável"
+  },
+  "weights": {
+      "C1": ["I"],
+      "C2": ["IM"],
+      "C3": ["IM"],
+      "C4": ["I"]
+  },
+  "criteria_type": {
+      "C1": "Benefit",
+      "C2": "Benefit",
+      "C3": "Benefit",
+      "C4": "Benefit"
+  },
+  "alternatives": [
+      "Fornecedor 1", "Fornecedor 2", "Fornecedor 3",
+      "Fornecedor 4", "Fornecedor 5", "Fornecedor 6",
+      "Fornecedor 7", "Fornecedor 8", "Fornecedor 9"
+  ]
+}

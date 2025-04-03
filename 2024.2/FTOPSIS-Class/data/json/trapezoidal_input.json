@@ -1,0 +1,64 @@
+{
+    "linguistic_variables_alternatives": {
+        "VL": [0.0, 0.0, 0.1, 0.2],
+        "L": [0.1, 0.2, 0.3, 0.4],
+        "M": [0.3, 0.4, 0.5, 0.6],
+        "H": [0.5, 0.6, 0.7, 0.8],
+        "VH": [0.7, 0.8, 0.9, 1.0]
+    },
+    "linguistic_variables_weights": {
+        "U": [0.0, 0.0, 0.1, 0.2],
+        "MI": [0.1, 0.2, 0.3, 0.4],
+        "I": [0.3, 0.4, 0.5, 0.6],
+        "VI": [0.5, 0.6, 0.7, 0.8],
+        "EI": [0.7, 0.8, 0.9, 1.0]
+    },
+    "decision_matrix": {
+        "C1": ["VL", "VL", "L", "L", "M", "M", "H", "H", "VH", "VH"],
+        "C2": ["VL", "VL", "VL", "VL", "VL", "VL", "H", "L", "VL", "VH"],
+        "C3": ["H", "VH", "H", "VH", "VH", "VH", "VH", "VL", "VH", "L"],
+        "C4": ["VL", "VL", "L", "L", "M", "M", "H", "H", "VH", "VH"],
+        "C5": ["VH", "VH", "H", "H", "M", "M", "L", "L", "VL", "VL"],
+        "C6": ["VL", "VL", "L", "L", "M", "M", "H", "H", "VH", "VH"],
+        "C7": ["M", "M", "M", "M", "VH", "VH", "VH", "H", "H", "VH"]
+    },
+    "profile_matrix": {
+        "C1": ["L", "L", "H", "VH"],
+        "C2": ["VL", "VL", "VL", "VL"],
+        "C3": ["VL", "L", "H", "VH"],
+        "C4": ["VL", "L", "H", "VH"],
+        "C5": ["VH", "H", "L", "VL"],
+        "C6": ["VL", "L", "H", "VH"],
+        "C7": ["H", "H", "L", "VL"]
+    },
+    "profile_mapping": {
+        "0": "Conservative",
+        "1": "Moderate",
+        "2": "Bold",
+        "3": "Aggressive"
+    },
+    "weights": {
+        "C1": ["I"],
+        "C2": ["I"],
+        "C3": ["I"],
+        "C4": ["I"],
+        "C5": ["I"],
+        "C6": ["I"],
+        "C7": ["I"]
+    },
+    "criteria_type": {
+        "C1": "Benefit",
+        "C2": "Benefit",
+        "C3": "Benefit",
+        "C4": "Benefit",
+        "C5": "Benefit",
+        "C6": "Benefit",
+        "C7": "Benefit"
+    },
+    "alternatives": [
+        "Fornecedor 1", "Fornecedor 2", "Fornecedor 3",
+        "Fornecedor 4", "Fornecedor 5", "Fornecedor 6",
+        "Fornecedor 7", "Fornecedor 8", "Fornecedor 9",
+        "Fornecedor 10"
+    ]
+  }
