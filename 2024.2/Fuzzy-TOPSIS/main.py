@@ -4,7 +4,7 @@ import json
 
 class FuzzyTOPSIS:
     """
-    Implementação do algoritmo Fuzzy TOPSIS para tomada de decisão multicritério
+    Implementaï¿½ï¿½o do algoritmo Fuzzy TOPSIS para tomada de decisï¿½o multicritï¿½rio
     adaptado para processar dados de entrada em formato JSON.
     """
     
@@ -12,10 +12,10 @@ class FuzzyTOPSIS:
         """
         Inicializa o algoritmo Fuzzy TOPSIS com dados em formato JSON.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         json_data : str ou dict
-            Dados de entrada em formato JSON ou dicionário Python
+            Dados de entrada em formato JSON ou dicionï¿½rio Python
         """
         # Carrega os dados JSON se for uma string
         if isinstance(json_data, str):
@@ -23,25 +23,25 @@ class FuzzyTOPSIS:
         else:
             self.data = json_data
             
-        # Extrai os parâmetros do JSON
+        # Extrai os parï¿½metros do JSON
         params = self.data["parameters"]
         self.alternatives = params["alternatives"]
         self.criteria = params["criteria"]
         
-        # Converte a matriz de desempenho para o formato necessário
+        # Converte a matriz de desempenho para o formato necessï¿½rio
         self.decision_matrix = self._convert_performance_matrix(params["performance_matrix"])
         
-        # Converte os tipos de critérios para o formato necessário (1 para max, -1 para min)
+        # Converte os tipos de critï¿½rios para o formato necessï¿½rio (1 para max, -1 para min)
         self.criteria_type = self._convert_criteria_types(params["criteria_types"])
         
-        # Converte os pesos para o formato necessário
+        # Converte os pesos para o formato necessï¿½rio
         self.weights = self._convert_weights(params["weights"])
 
     def _convert_performance_matrix(self, performance_dict):
         """
         Converte a matriz de desempenho do formato JSON para numpy array.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         performance_dict : dict
             Matriz de desempenho no formato do JSON
@@ -49,15 +49,15 @@ class FuzzyTOPSIS:
         Retorna:
         --------
         numpy.ndarray
-            Matriz de decisão fuzzy triangular de formato (n_alternativas, n_criterios, 3)
+            Matriz de decisï¿½o fuzzy triangular de formato (n_alternativas, n_criterios, 3)
         """
         n_alternatives = len(self.alternatives)
         n_criteria = len(self.criteria)
         
-        # Inicializa a matriz de decisão
+        # Inicializa a matriz de decisï¿½o
         decision_matrix = np.zeros((n_alternatives, n_criteria, 3))
         
-        # Preenche a matriz de decisão
+        # Preenche a matriz de decisï¿½o
         for i, alt in enumerate(self.alternatives):
             for j, crit in enumerate(self.criteria):
                 decision_matrix[i, j] = performance_dict[alt][j]
@@ -66,17 +66,17 @@ class FuzzyTOPSIS:
     
     def _convert_criteria_types(self, criteria_types_dict):
         """
-        Converte os tipos de critérios do formato JSON para array numpy.
+        Converte os tipos de critï¿½rios do formato JSON para array numpy.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         criteria_types_dict : dict
-            Tipos de critérios no formato do JSON
+            Tipos de critï¿½rios no formato do JSON
             
         Retorna:
         --------
         numpy.ndarray
-            Array com os tipos de critérios (1 para max, -1 para min)
+            Array com os tipos de critï¿½rios (1 para max, -1 para min)
         """
         criteria_type = np.zeros(len(self.criteria))
         
@@ -89,7 +89,7 @@ class FuzzyTOPSIS:
         """
         Converte os pesos do formato JSON para array numpy.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         weights_dict : dict
             Pesos no formato do JSON
@@ -109,17 +109,17 @@ class FuzzyTOPSIS:
     
     def normalize_fuzzy_matrix(self, decision_matrix):
         """
-        Normaliza a matriz de decisão fuzzy.
+        Normaliza a matriz de decisï¿½o fuzzy.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         decision_matrix : numpy.ndarray
-            Matriz de decisão fuzzy triangular
+            Matriz de decisï¿½o fuzzy triangular
             
         Retorna:
         --------
         numpy.ndarray
-            Matriz de decisão fuzzy normalizada
+            Matriz de decisï¿½o fuzzy normalizada
         """
         n_alternatives = len(self.alternatives)
         n_criteria = len(self.criteria)
@@ -127,20 +127,20 @@ class FuzzyTOPSIS:
         normalized_matrix = np.zeros((n_alternatives, n_criteria, 3))
         
         for j in range(n_criteria):
-            if self.criteria_type[j] > 0:  # Critério de benefício (max)
-                # Encontra o maior valor superior (u) para o critério
+            if self.criteria_type[j] > 0:  # Critï¿½rio de benefï¿½cio (max)
+                # Encontra o maior valor superior (u) para o critï¿½rio
                 c_max = np.max(decision_matrix[:, j, 2])
                 
-                # Normaliza usando c_max para critérios de benefício
+                # Normaliza usando c_max para critï¿½rios de benefï¿½cio
                 for i in range(n_alternatives):
                     normalized_matrix[i, j, 0] = decision_matrix[i, j, 0] / c_max
                     normalized_matrix[i, j, 1] = decision_matrix[i, j, 1] / c_max
                     normalized_matrix[i, j, 2] = decision_matrix[i, j, 2] / c_max
-            else:  # Critério de custo (min)
-                # Encontra o menor valor inferior (l) para o critério
+            else:  # Critï¿½rio de custo (min)
+                # Encontra o menor valor inferior (l) para o critï¿½rio
                 c_min = np.min(decision_matrix[:, j, 0])
                 
-                # Normaliza usando c_min para critérios de custo
+                # Normaliza usando c_min para critï¿½rios de custo
                 for i in range(n_alternatives):
                     normalized_matrix[i, j, 0] = c_min / decision_matrix[i, j, 0]
                     normalized_matrix[i, j, 1] = c_min / decision_matrix[i, j, 1]
@@ -150,17 +150,17 @@ class FuzzyTOPSIS:
     
     def calculate_weighted_matrix(self, normalized_matrix):
         """
-        Calcula a matriz de decisão fuzzy normalizada ponderada.
+        Calcula a matriz de decisï¿½o fuzzy normalizada ponderada.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         normalized_matrix : numpy.ndarray
-            Matriz de decisão fuzzy normalizada
+            Matriz de decisï¿½o fuzzy normalizada
             
         Retorna:
         --------
         numpy.ndarray
-            Matriz de decisão fuzzy normalizada ponderada
+            Matriz de decisï¿½o fuzzy normalizada ponderada
         """
         n_alternatives = len(self.alternatives)
         n_criteria = len(self.criteria)
@@ -169,7 +169,7 @@ class FuzzyTOPSIS:
         
         for i in range(n_alternatives):
             for j in range(n_criteria):
-                # Multiplicação de números fuzzy triangulares
+                # Multiplicaï¿½ï¿½o de nï¿½meros fuzzy triangulares
                 weighted_matrix[i, j, 0] = normalized_matrix[i, j, 0] * self.weights[j, 0]
                 weighted_matrix[i, j, 1] = normalized_matrix[i, j, 1] * self.weights[j, 1]
                 weighted_matrix[i, j, 2] = normalized_matrix[i, j, 2] * self.weights[j, 2]
@@ -178,12 +178,12 @@ class FuzzyTOPSIS:
     
     def calculate_fpis_fnis(self, weighted_matrix):                     
         """
-        Calcula a Solução Ideal Positiva Fuzzy (FPIS) e Solução Ideal Negativa Fuzzy (FNIS).
+        Calcula a Soluï¿½ï¿½o Ideal Positiva Fuzzy (FPIS) e Soluï¿½ï¿½o Ideal Negativa Fuzzy (FNIS).
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         weighted_matrix : numpy.ndarray
-            Matriz de decisão fuzzy normalizada ponderada
+            Matriz de decisï¿½o fuzzy normalizada ponderada
             
         Retorna:
         --------
@@ -207,26 +207,26 @@ class FuzzyTOPSIS:
     
     def calculate_distances(self, weighted_matrix, fpis, fnis):
         """
-        Calcula as distâncias de cada alternativa para FPIS e FNIS.
+        Calcula as distï¿½ncias de cada alternativa para FPIS e FNIS.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         weighted_matrix : numpy.ndarray
-            Matriz de decisão fuzzy normalizada ponderada
+            Matriz de decisï¿½o fuzzy normalizada ponderada
         fpis : numpy.ndarray
-            Solução Ideal Positiva Fuzzy
+            Soluï¿½ï¿½o Ideal Positiva Fuzzy
         fnis : numpy.ndarray
-            Solução Ideal Negativa Fuzzy
+            Soluï¿½ï¿½o Ideal Negativa Fuzzy
             
         Retorna:
         --------
         tuple
-            (distâncias para FPIS, distâncias para FNIS)
+            (distï¿½ncias para FPIS, distï¿½ncias para FNIS)
         """
         n_alternatives = len(self.alternatives)
         n_criteria = len(self.criteria)
         
-        # Correção: inicializa as distâncias como arrays
+        # Correï¿½ï¿½o: inicializa as distï¿½ncias como arrays
         fpis_distances = np.zeros(n_alternatives)
         fnis_distances = np.zeros(n_alternatives)
         
@@ -235,8 +235,8 @@ class FuzzyTOPSIS:
             fnis_dist_sum = 0
             
             for j in range(n_criteria):
-                # Distância euclidiana entre números fuzzy triangulares
-                # Correção: fórmula de distância
+                # Distï¿½ncia euclidiana entre nï¿½meros fuzzy triangulares
+                # Correï¿½ï¿½o: fï¿½rmula de distï¿½ncia
                 fpis_dist_sum += np.sqrt((1/3) * ((weighted_matrix[i, j, 0] - fpis[j, 0])**2 + 
                                        (weighted_matrix[i, j, 1] - fpis[j, 1])**2 + 
                                        (weighted_matrix[i, j, 2] - fpis[j, 2])**2))
@@ -245,11 +245,11 @@ class FuzzyTOPSIS:
                                       (weighted_matrix[i, j, 1] - fnis[j, 1])**2 + 
                                       (weighted_matrix[i, j, 2] - fnis[j, 2])**2))
             
-            # Calcula a raiz quadrada para obter a distância euclidiana
+            # Calcula a raiz quadrada para obter a distï¿½ncia euclidiana
             fpis_distances[i] = fpis_dist_sum
             fnis_distances[i] = fnis_dist_sum
         
-        # Normalização das distâncias para obter os valores esperados
+        # Normalizaï¿½ï¿½o das distï¿½ncias para obter os valores esperados
         
         return fpis_distances, fnis_distances
     
@@ -257,12 +257,12 @@ class FuzzyTOPSIS:
         """
         Calcula os coeficientes de proximidade para cada alternativa.
         
-        Parâmetros:
+        Parï¿½metros:
         -----------
         fpis_distances : numpy.ndarray
-            Distâncias para Solução Ideal Positiva Fuzzy
+            Distï¿½ncias para Soluï¿½ï¿½o Ideal Positiva Fuzzy
         fnis_distances : numpy.ndarray
-            Distâncias para Solução Ideal Negativa Fuzzy
+            Distï¿½ncias para Soluï¿½ï¿½o Ideal Negativa Fuzzy
             
         Retorna:
         --------
@@ -272,7 +272,7 @@ class FuzzyTOPSIS:
 
         closeness_coefficients = []
 
-        for i in range(len(self.criteria)):
+        for i in range(len(self.alternatives)):
             closeness_coefficients.append(fnis_distances[i]/(fnis_distances[i]+fpis_distances[i]))
         
         return closeness_coefficients
@@ -284,9 +284,9 @@ class FuzzyTOPSIS:
         Retorna:
         --------
         dict
-            Resultados em formato JSON específico
+            Resultados em formato JSON especï¿½fico
         """
-        # Normaliza a matriz de decisão
+        # Normaliza a matriz de decisï¿½o
         normalized_matrix = self.normalize_fuzzy_matrix(self.decision_matrix)
         
         # Calcula a matriz ponderada
@@ -295,10 +295,10 @@ class FuzzyTOPSIS:
         # Calcula FPIS e FNIS
         fpis, fnis = self.calculate_fpis_fnis(weighted_matrix)
         
-        # Calcula as distâncias
+        # Calcula as distï¿½ncias
         fpis_distances, fnis_distances = self.calculate_distances(weighted_matrix, fpis, fnis)
         
-        # Calcula os coeficientes de proximidade (agora são as distâncias normalizadas para FNIS)
+        # Calcula os coeficientes de proximidade (agora sï¿½o as distï¿½ncias normalizadas para FNIS)
         closeness_coefficients = self.calculate_closeness_coefficients(fpis_distances, fnis_distances)
         
         # Cria um DataFrame com os resultados
@@ -312,7 +312,7 @@ class FuzzyTOPSIS:
         # Ordena pelo coeficiente de proximidade em ordem decrescente
         results_df = results_df.sort_values('Proximity', ascending=False)
         
-        # Formata o JSON de saída conforme especificado
+        # Formata o JSON de saï¿½da conforme especificado
         results_json = {
             "results": {
                 "proximities": {},
@@ -322,14 +322,14 @@ class FuzzyTOPSIS:
             }
         }
         
-        # Preenche as proximidades e distâncias para cada alternativa
+        # Preenche as proximidades e distï¿½ncias para cada alternativa
         for _, row in results_df.iterrows():
             alt = row['Alternative']
             proximity = round(float(row['Proximity']), 2)  # Arredonda para 2 casas decimais
             ideal_distance = round(float(row['Ideal_Distance']), 2)
             negative_ideal_distance = round(float(row['Negative_Ideal_Distance']), 2)
             
-            # Adiciona à estrutura JSON
+            # Adiciona ï¿½ estrutura JSON
             results_json["results"]["proximities"][alt] = proximity
             results_json["results"]["distances"][alt] = {
                 "ideal": ideal_distance,
@@ -338,26 +338,26 @@ class FuzzyTOPSIS:
         
         return results_json
 
-# Função para processar a entrada JSON
+# Funï¿½ï¿½o para processar a entrada JSON
 def process_fuzzy_topsis(json_input):
     """
     Processa a entrada JSON e executa o algoritmo Fuzzy TOPSIS.
     
-    Parâmetros:
+    Parï¿½metros:
     -----------
     json_input : str ou dict
-        Dados de entrada em formato JSON ou dicionário Python
+        Dados de entrada em formato JSON ou dicionï¿½rio Python
         
     Retorna:
     --------
     dict
-        Resultados em formato JSON específico
+        Resultados em formato JSON especï¿½fico
     """
     try:
         # Inicializa o algoritmo Fuzzy TOPSIS com os dados JSON
         fuzzy_topsis = FuzzyTOPSIS(json_input)
         
-        # Executa o algoritmo e obtém os resultados
+        # Executa o algoritmo e obtï¿½m os resultados
         results = fuzzy_topsis.rank_alternatives()
         
         return results
