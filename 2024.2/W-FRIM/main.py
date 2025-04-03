@@ -1,208 +1,229 @@
-import numpy as np
-import math
 import json
-from utils import get_all_parameters
+from typing import Dict, Tuple
 
 
-class WeightedFuzzyReferenceIdealMethod:
-    def __init__(
-        self,
-        decision_matrix,
-        criterion_weights,
-        lower_bound_ranges,
-        reference_ideal_pairs,
-        preference_lambdas,
-    ):
-        self.decision_matrix = decision_matrix
-        self.criterion_weights = criterion_weights
-        self.lower_bound_ranges = lower_bound_ranges
-        self.reference_ideal_pairs = reference_ideal_pairs
-        self.preference_lambdas = preference_lambdas
+class TriangularFuzzyNumber:
+    def __init__(self, l: float, m: float, r: float):
+        self.l = l  # left value
+        self.m = m  # middle value
+        self.r = r  # right value
 
-        self.num_alternatives = len(decision_matrix)
-        self.num_criteria = len(decision_matrix[0])
+    def __repr__(self):
+        return f"TFN({self.l}, {self.m}, {self.r})"
 
-        self.weighted_reference_ideals = self._calculate_weighted_reference_ideal_list()
-        self.normalized_decision_matrix = None
-        self.weighted_normalized_matrix = None
-        self.relative_indices = None
-        self.alternative_ranking = None
+    def is_in_range(
+        self, other_low: "TriangularFuzzyNumber", other_high: "TriangularFuzzyNumber"
+    ) -> bool:
+        return self.l >= other_low.l and self.r <= other_high.r
 
-    @staticmethod
-    def calculate_fuzzy_distance(fuzzy_number1, fuzzy_number2):
-        return (
-            abs(fuzzy_number1[0] - fuzzy_number2[0])
-            + abs(fuzzy_number1[1] - fuzzy_number2[1])
-            + abs(fuzzy_number1[2] - fuzzy_number2[2])
-        ) / 3.0
 
-    @staticmethod
-    def calculate_adjusted_distance(
-        fuzzy_value, weighted_reference, reference_lower, reference_upper
-    ):
-        denominator = 1 + abs(reference_lower[0] - reference_upper[2])
-        distance_lower = abs(fuzzy_value[0] - weighted_reference[0]) / denominator
-        distance_middle = abs(fuzzy_value[1] - weighted_reference[1])
-        distance_upper = abs(fuzzy_value[2] - weighted_reference[2]) / denominator
-        return distance_lower + distance_middle + distance_upper
+class WFRIM:
+    def __init__(self, input_file: str = None):
+        self.alternatives = []
+        self.criteria = []
+        self.decision_matrix = {}
+        self.weights = {}
+        self.ranges = {}
+        self.ideal_ranges = {}
+        self.lambdas = {}
 
-    @staticmethod
-    def is_value_in_reference_interval(fuzzy_value, reference_lower, reference_upper):
-        return reference_lower[1] <= fuzzy_value[1] <= reference_upper[1]
+        if input_file:
+            self.load_from_json(input_file)
 
-    @staticmethod
-    def are_floats_nearly_equal(value1, value2, tolerance=1e-6):
-        return abs(value1 - value2) < tolerance
+    def load_from_json(self, input_file: str):
+        with open(input_file, "r") as f:
+            data = json.load(f)
 
-    def _calculate_weighted_reference_ideal_list(self):
-        weighted_reference_list = []
-        for j in range(self.num_criteria):
-            ref_lower, ref_upper = self.reference_ideal_pairs[j]
-            lam = self.preference_lambdas[j]
-            delta_lower = ref_lower[0]
-            delta_middle = (1 - lam) * ref_lower[1] + lam * ref_upper[1]
-            delta_upper = ref_upper[2]
-            weighted_reference_list.append((delta_lower, delta_middle, delta_upper))
-        return weighted_reference_list
+        params = data["parameters"]
+        self.criteria = params["criteria"]
 
-    def _calculate_normalized_value(
-        self,
-        fuzzy_performance,
-        lower_bound_range,
-        weighted_reference,
-        ref_lower,
-        ref_upper,
-    ):
-        tolerance = 1e-6
-        if self.are_floats_nearly_equal(
-            fuzzy_performance[1], weighted_reference[1], tolerance
-        ):
-            return 1.0
-
-        base_distance = self.calculate_fuzzy_distance(
-            lower_bound_range, weighted_reference
-        )
-        if self.are_floats_nearly_equal(base_distance, 0, tolerance):
-            return 1.0
-
-        if self.is_value_in_reference_interval(fuzzy_performance, ref_lower, ref_upper):
-            normalized_value = 1 - (
-                self.calculate_adjusted_distance(
-                    fuzzy_performance, weighted_reference, ref_lower, ref_upper
-                )
-                / (2 * base_distance)
+        # Set weights, ranges, ideal ranges, and preferences
+        for crit in self.criteria:
+            self.weights[crit] = TriangularFuzzyNumber(*params["weights"][crit])
+            self.ranges[crit] = (
+                TriangularFuzzyNumber(*params["range"][crit][0]),
+                TriangularFuzzyNumber(*params["range"][crit][1]),
             )
-        else:
-            normalized_value = 1 - (
-                self.calculate_fuzzy_distance(fuzzy_performance, weighted_reference)
-                / base_distance
+            self.ideal_ranges[crit] = (
+                TriangularFuzzyNumber(*params["reference_ideal"][crit][0]),
+                TriangularFuzzyNumber(*params["reference_ideal"][crit][1]),
             )
-        return max(0, min(normalized_value, 1))
+            self.lambdas[crit] = params["preferences"][crit]
 
-    def compute_normalized_decision_matrix(self):
-        N = np.zeros((self.num_alternatives, self.num_criteria))
-        for alt in range(self.num_alternatives):
-            for crit in range(self.num_criteria):
-                perf = self.decision_matrix[alt][crit]
-                lower_bound = self.lower_bound_ranges[crit]
-                weighted_ref = self.weighted_reference_ideals[crit]
-                ref_lower, ref_upper = self.reference_ideal_pairs[crit]
-                N[alt, crit] = self._calculate_normalized_value(
-                    perf, lower_bound, weighted_ref, ref_lower, ref_upper
-                )
-        self.normalized_decision_matrix = N
-        return N
-
-    def compute_weighted_normalized_matrix(self):
-        if self.normalized_decision_matrix is None:
-            self.compute_normalized_decision_matrix()
-        weight_middles = np.array([w[1] for w in self.criterion_weights])
-        P = self.normalized_decision_matrix * weight_middles
-        self.weighted_normalized_matrix = P
-        return P
-
-    def compute_relative_indices(self):
-        if self.weighted_normalized_matrix is None:
-            self.compute_weighted_normalized_matrix()
-        weight_middles = np.array([w[1] for w in self.criterion_weights])
-        A_plus = np.zeros(self.num_alternatives)
-        A_minus = np.zeros(self.num_alternatives)
-        for i in range(self.num_alternatives):
-            sum_plus = 0
-            sum_minus = 0
-            for j in range(self.num_criteria):
-                sum_plus += (
-                    self.weighted_normalized_matrix[i, j] - weight_middles[j]
-                ) ** 2
-                sum_minus += (self.weighted_normalized_matrix[i, j]) ** 2
-            A_plus[i] = math.sqrt(sum_plus)
-            A_minus[i] = math.sqrt(sum_minus)
-        self.relative_indices = []
-        for i in range(self.num_alternatives):
-            denom = A_plus[i] + A_minus[i]
-            rel_index = 0 if denom == 0 else A_minus[i] / denom
-            self.relative_indices.append(rel_index)
-        return self.relative_indices
-
-    def rank_alternatives(self):
-        if self.relative_indices is None:
-            self.compute_relative_indices()
-        self.alternative_ranking = sorted(
-            list(enumerate(self.relative_indices)),
-            key=lambda item: item[1],
-            reverse=True,
-        )
-        return self.alternative_ranking
-
-    def run_w_frim(self):
-        self.compute_normalized_decision_matrix()
-        self.compute_weighted_normalized_matrix()
-        self.compute_relative_indices()
-        self.rank_alternatives()
-        return (
-            self.alternative_ranking,
-            self.relative_indices,
-            self.normalized_decision_matrix,
-            self.weighted_normalized_matrix,
-        )
-
-
-# --- Main Execution Block with JSON ---
-if __name__ == "__main__":
-    with open("data/input.json") as f:
-        json_data = json.load(f)
-    
-    parameters = json_data["parameters"]
-    criteria = parameters["criteria"]
-    alt_names = [alt["name"] for alt in parameters["performance_matrix"]]
-
-    (
-        decision_matrix,
-        lower_bound_ranges,
-        reference_ideal_pairs,
-        preference_lambdas,
-        criterion_weights,
-    ) = get_all_parameters(parameters, criteria)
-
-    model = WeightedFuzzyReferenceIdealMethod(
-        decision_matrix,
-        criterion_weights,
-        lower_bound_ranges,
-        reference_ideal_pairs,
-        preference_lambdas,
-    )
-
-    ranking, relative_indices, normalized_matrix, weighted_matrix = model.run_w_frim()
-
-    results = {
-        "method": "W-FRIM",
-        "results": {
-            "ranking": [alt_names[idx] for idx, _ in ranking],
-            "scores": {alt_names[i]: round(score, 6) for i, score in enumerate(relative_indices)},
-            "normalized_weights": {
-                alt_names[i]: [round(val, 6) for val in weighted_matrix[i]] for i in range(len(alt_names))
+        # Set alternatives and performance matrix
+        for alt_data in params["performance_matrix"]:
+            alt_name = alt_data["name"]
+            self.alternatives.append(alt_name)
+            self.decision_matrix[alt_name] = {
+                crit: TriangularFuzzyNumber(*alt_data["values"][crit])
+                for crit in self.criteria
             }
-        }
-    }
 
-    print(json.dumps(results, indent=2))
+    def calculate_weighted_reference_ideal(
+        self, criterion: str
+    ) -> TriangularFuzzyNumber:
+        C_j = self.ideal_ranges[criterion][0]
+        D_j = self.ideal_ranges[criterion][1]
+        lambda_j = self.lambdas[criterion]
+
+        delta_1j = C_j.l
+        delta_2j = (1 - lambda_j) * C_j.m + lambda_j * D_j.m
+        delta_3j = D_j.r
+
+        return TriangularFuzzyNumber(delta_1j, delta_2j, delta_3j)
+
+    def absolute_distance(
+        self, a: TriangularFuzzyNumber, b: TriangularFuzzyNumber
+    ) -> float:
+        return (abs(a.l - b.l) + abs(a.m - b.m) + abs(a.r - b.r)) / 3
+
+    def distance_within_ideal_range(
+        self, x: TriangularFuzzyNumber, criterion: str, delta: TriangularFuzzyNumber
+    ) -> float:
+        C_j = self.ideal_ranges[criterion][0]
+        D_j = self.ideal_ranges[criterion][1]
+        denominator = 1 + abs(C_j.l - D_j.r)
+        return (
+            abs(x.l - delta.l) / denominator
+            + abs(x.m - delta.m)
+            + abs(x.r - delta.r) / denominator
+        ) / 3
+
+    def distance_outside_ideal_range(
+        self, x: TriangularFuzzyNumber, criterion: str, delta: TriangularFuzzyNumber
+    ) -> float:
+        A_j = self.ranges[criterion][0]
+        B_j = self.ranges[criterion][1]
+        return (
+            self.absolute_distance(x, delta)
+            + max(
+                self.absolute_distance(A_j, delta), self.absolute_distance(delta, B_j)
+            )
+        ) / 2
+
+    def normalize_performance(self, x: TriangularFuzzyNumber, criterion: str) -> float:
+        A_j, B_j = self.ranges[criterion]
+        C_j, D_j = self.ideal_ranges[criterion]
+        delta_j = self.calculate_weighted_reference_ideal(criterion)
+
+        if x.l == delta_j.l and x.m == delta_j.m and x.r == delta_j.r:
+            return 1.0
+
+        if x.is_in_range(C_j, D_j):
+            dist = self.distance_within_ideal_range(x, criterion, delta_j)
+            denom = self.absolute_distance(A_j, delta_j) + self.absolute_distance(
+                delta_j, B_j
+            )
+            return 1 - (dist / denom) if denom != 0 else 1.0
+        else:
+            dist = self.distance_outside_ideal_range(x, criterion, delta_j)
+            denom = max(
+                self.absolute_distance(A_j, delta_j),
+                self.absolute_distance(delta_j, B_j),
+            )
+            return 1 - (dist / denom) if denom != 0 else 0.0
+
+    def calculate_normalized_matrix(self) -> Dict[str, Dict[str, float]]:
+        return {
+            alt: {
+                crit: self.normalize_performance(self.decision_matrix[alt][crit], crit)
+                for crit in self.criteria
+            }
+            for alt in self.alternatives
+        }
+
+    def calculate_weighted_normalized_matrix(
+        self, normalized_matrix: Dict[str, Dict[str, float]]
+    ) -> Dict[str, Dict[str, TriangularFuzzyNumber]]:
+        return {
+            alt: {
+                crit: TriangularFuzzyNumber(
+                    normalized_matrix[alt][crit] * self.weights[crit].l,
+                    normalized_matrix[alt][crit] * self.weights[crit].m,
+                    normalized_matrix[alt][crit] * self.weights[crit].r,
+                )
+                for crit in self.criteria
+            }
+            for alt in self.alternatives
+        }
+
+    def calculate_ideal_distances(
+        self, weighted_matrix: Dict[str, Dict[str, TriangularFuzzyNumber]]
+    ) -> Dict[str, Tuple[float, float]]:
+        c_star = {}
+        d_star = {}
+        for crit in self.criteria:
+            C_j = self.ideal_ranges[crit][0]
+            D_j = self.ideal_ranges[crit][1]
+            max_C = max([self.ideal_ranges[c][0].m for c in self.criteria])
+            max_D = max([self.ideal_ranges[c][1].m for c in self.criteria])
+            c_star[crit] = TriangularFuzzyNumber(
+                C_j.l / max_C, C_j.m / max_C, C_j.r / max_C
+            )
+            d_star[crit] = TriangularFuzzyNumber(
+                D_j.l / max_D, D_j.m / max_D, D_j.r / max_D
+            )
+
+        return {
+            alt: (
+                sum(
+                    self.absolute_distance(
+                        weighted_matrix[alt][crit], self.weights[crit]
+                    )
+                    for crit in self.criteria
+                ),
+                sum(
+                    max(
+                        self.absolute_distance(
+                            weighted_matrix[alt][crit], c_star[crit]
+                        ),
+                        self.absolute_distance(
+                            weighted_matrix[alt][crit], d_star[crit]
+                        ),
+                    )
+                    for crit in self.criteria
+                ),
+            )
+            for alt in self.alternatives
+        }
+
+    def calculate_relative_indices(
+        self, distances: Dict[str, Tuple[float, float]]
+    ) -> Dict[str, float]:
+        return {
+            alt: A_minus / (A_plus + A_minus) if (A_plus + A_minus) != 0 else 0.0
+            for alt, (A_plus, A_minus) in distances.items()
+        }
+
+    def calculate_normalized_weights(self) -> Dict[str, float]:
+        total = sum(w.m for w in self.weights.values())
+        return {crit: self.weights[crit].m / total for crit in self.criteria}
+
+    def run(self) -> Dict:
+        normalized_matrix = self.calculate_normalized_matrix()
+        weighted_matrix = self.calculate_weighted_normalized_matrix(normalized_matrix)
+        distances = self.calculate_ideal_distances(weighted_matrix)
+        scores = self.calculate_relative_indices(distances)
+
+        ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+
+        weighted_normalized_output = {
+            alt: {
+                crit: round(weighted_matrix[alt][crit].m, 6) for crit in self.criteria
+            }
+            for alt in self.alternatives
+        }
+        return {
+            "method": "WFRIM",
+            "results": {
+                "ranking": [alt for alt, score in ranked],
+                "scores": {alt: round(score, 6) for alt, score in scores.items()},
+                "normalized_weights": weighted_normalized_output,
+            },
+        }
+
+
+if __name__ == "__main__":
+    wfrim = WFRIM("data/input.json")
+    result = wfrim.run()
+    print(json.dumps(result, indent=2))

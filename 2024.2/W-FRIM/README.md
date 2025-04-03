@@ -27,7 +27,6 @@ Esses dados são processados para:
 .
 ├── data/
 │   ├── input.json
-├── utils.py
 ├── main.py
 └── README.md
 ```
@@ -36,7 +35,6 @@ Esses dados são processados para:
 
 Requisitos:
 - Python 3.7+
-- numpy
 
 ## Execução
 
@@ -109,8 +107,14 @@ python main.py
       "A11": 0.208098
     },
     "normalized_weights": {
-      "A1": [0.112106, 0.0, 0.16, 0.008508, 0.0, 0.0],
-      "A2": [0.126045, 0.081958, 0.11354, 0.16, 0.05298, 0.0],
+      "A1": {
+        "C1": 0.13986,
+        "C2": 0.120719,
+        "C3": 0.13683,
+        "C4": 0.118757,
+        "C5": 0.02649,
+        "C6": 0.125826
+      },
       // ...
     }
   }
@@ -119,7 +123,7 @@ python main.py
 
 ## Referência Teórica
 
-A implementação do método está baseado no artigo W-FRIM: : A weighted fuzzy RIM approach.
+A implementação do método está baseado no artigo W-FRIM: A weighted fuzzy RIM approach.
 
 ## Autores
 Victoria Pantoja - vpa@cin.ufpe.br
