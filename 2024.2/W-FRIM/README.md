@@ -45,7 +45,7 @@ Instale as dependências com:
 pip install pandas numpy
 ```
 
-## ▶️ Execução
+## Execução
 
 Rode o script principal com:
 
@@ -72,15 +72,15 @@ python main.py
           "C6": [1.0141, 1.0348, 1.0555]
         }
       }
-      // outras alternativas...
+      // ...
     ],
     "range": {
       "C1": [[2.4304, 2.4800, 2.5296], [3.9396, 4.0200, 4.1004]]
-      // outros critérios...
+      // ...
     },
     "reference_ideal": {
       "C1": [[3.4300, 3.500, 3.5700], [3.9396, 4.0200, 4.1004]]
-      // outros critérios...
+      // ...
     },
     "preferences": {
       "C1": 1,
@@ -118,7 +118,7 @@ python main.py
     "normalized_weights": {
       "A1": [0.112106, 0.0, 0.16, 0.008508, 0.0, 0.0],
       "A2": [0.126045, 0.081958, 0.11354, 0.16, 0.05298, 0.0],
-      // ... até A11
+      // ...
     }
   }
 }
