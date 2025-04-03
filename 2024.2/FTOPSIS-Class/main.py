@@ -4,6 +4,7 @@ import pandas as pd
 from typing import Tuple, Dict, Any, Union
 from utils.format_output import format_to_json
 from ftopsis_class.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
+from utils.invert_matrix import invert_matrix
 
 class FTOPSISProcessor:
     
@@ -23,7 +24,7 @@ class FTOPSISProcessor:
         print(result.to_string(index=True, float_format="%.5f"))
 
     @staticmethod
-    def print_trapezoidal_results(elements: list, closeness: dict, 
+    def print_trapezoidal_results(alternatives: list, closeness: dict, 
                                 classification: dict, profile_mapping: dict) -> None:
         profiles = list(profile_mapping.values())
         
@@ -31,18 +32,18 @@ class FTOPSISProcessor:
         profile_width = 15
         
         # Cabeçalho
-        header = f"{'Element':<{elem_width}}"
+        header = f"{'alternative':<{elem_width}}"
         for profile in profiles:
             header += f"{profile:<{profile_width}}"
         header += "Classification"
         print(header)
         
         # Linhas de dados
-        for element in elements:
-            cc = closeness[element]
-            best_profile, best_cc = classification[element]
+        for alternative in alternatives:
+            cc = closeness[alternative]
+            best_profile, best_cc = classification[alternative]
             
-            row = f"{element:<{elem_width}}"
+            row = f"{alternative:<{elem_width}}"
             for profile in profiles:
                 row += f"{cc[profile]:<{profile_width}.5f}"
             row += f"{best_profile} ({best_cc:.5f})"
@@ -51,8 +52,8 @@ class FTOPSISProcessor:
 
     @staticmethod
     def detect_fuzzy_type(data: Dict[str, Any]) -> str:
-        if 'linguistic_terms' in data:
-            first_term = next(iter(data['linguistic_terms'].values()))
+        if 'linguistic_variables_alternatives' in data:
+            first_term = next(iter(data['linguistic_variables_alternatives'].values()))
             if len(first_term) == 4:
                 return 'trapezoidal'
         
@@ -67,34 +68,36 @@ def trapezoidal_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]
     criteria_type = {k: CriteriaType[v] for k, v in data['criteria_type'].items()}
     
     ftopsis = FTOPSISClass(
-        linguistic_terms=data['linguistic_terms'],
+        linguistic_variables_alternatives=data['linguistic_variables_alternatives'],
+        linguistic_variables_weights=data['linguistic_variables_weights'],
         weights=data['weights'],
         criteria_type=criteria_type,
-        elements=data['elements'],
-        criteria=data['criteria'],
-        fuzzy_decision_matrix=data['fuzzy_decision_matrix'],
-        reference_matrix=data['reference_matrix']
+        alternatives=data['alternatives'],
+        criteria=data['weights'].keys(),
+        profile_matrix=data['profile_matrix'],
+        decision_matrix=data['decision_matrix'],
+        profile_mapping=data['profile_mapping']
     )
     
     closeness, classification = ftopsis.run()
     
     profiles = list(data['profile_mapping'].values())
     result_data = {
-        element: {
-            **{profile: closeness[element][profile] for profile in profiles},
-            'Classification': classification[element][0]
+        alternative: {
+            **{profile: closeness[alternative][profile] for profile in profiles},
+            'Classification': classification[alternative][0]
         }
-        for element in data['elements']
+        for alternative in data['alternatives']
     }
     
     result = pd.DataFrame.from_dict(result_data, orient='index')
     
     json_output = {
-        element: {
-            'scores': {profile: float(closeness[element][profile]) for profile in profiles},
-            'classification': classification[element][0],
+        alternative: {
+            'scores': {profile: float(closeness[alternative][profile]) for profile in profiles},
+            'classification': classification[alternative][0],
         }
-        for element in data['elements']
+        for alternative in data['alternatives']
     }
 
     print("\nResultados:\n")
@@ -151,16 +154,17 @@ def main() -> None:
     while True:
         file_path = 'data/json/trapezoidal_input.json'
         
-        try:
-            data = FTOPSISProcessor.load_json_data(file_path)
-            fuzzy_type = FTOPSISProcessor.detect_fuzzy_type(data)
-            
-            if fuzzy_type == 'triangular':
-                triangular_ftopsis_class(data)
-            else:
-                trapezoidal_ftopsis_class(data)
-            break
-            
+        #try:
+        data = FTOPSISProcessor.load_json_data(file_path)
+        fuzzy_type = FTOPSISProcessor.detect_fuzzy_type(data)
+        
+        if fuzzy_type == 'triangular':
+            triangular_ftopsis_class(data)
+        else:
+            trapezoidal_ftopsis_class(data)
+        break
+
+        """    
         except FileNotFoundError:
             print(f"Arquivo não encontrado: {file_path}. Por favor, tente novamente.")
         except ValueError as e:
@@ -168,7 +172,7 @@ def main() -> None:
         except Exception as e:
             print(f"Erro inesperado: {str(e)}")
             exit(1)
-
+        """
 
 if __name__ == "__main__":
     try:
