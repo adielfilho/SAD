@@ -31,10 +31,7 @@ def get_criterion_weights_from_json(weights, criteria):
     return [tuple(weights[crit]) for crit in criteria]
 
 
-def get_all_parameters(json_data):
-    parameters = json_data["parameters"]
-    criteria = parameters["criteria"]
-
+def get_all_parameters(parameters,criteria):
     decision_matrix = get_decision_matrix_from_json(
         parameters["performance_matrix"], criteria
     )

@@ -171,6 +171,10 @@ class WeightedFuzzyReferenceIdealMethod:
 if __name__ == "__main__":
     with open("data/input.json") as f:
         json_data = json.load(f)
+    
+    parameters = json_data["parameters"]
+    criteria = parameters["criteria"]
+    alt_names = [alt["name"] for alt in parameters["performance_matrix"]]
 
     (
         decision_matrix,
@@ -178,7 +182,7 @@ if __name__ == "__main__":
         reference_ideal_pairs,
         preference_lambdas,
         criterion_weights,
-    ) = get_all_parameters(json_data)
+    ) = get_all_parameters(parameters, criteria)
 
     model = WeightedFuzzyReferenceIdealMethod(
         decision_matrix,
@@ -190,13 +194,15 @@ if __name__ == "__main__":
 
     ranking, relative_indices, normalized_matrix, weighted_matrix = model.run_w_frim()
 
-    print("Normalized Decision Matrix (N):")
-    print(normalized_matrix)
-    print("\nWeighted Normalized Decision Matrix (P):")
-    print(weighted_matrix)
-    print("\nRelative Indices for Alternatives:")
-    for idx, rel in enumerate(relative_indices):
-        print(f"Alternative A{idx+1}: {rel:.6f}")
-    print("\nRanking of Alternatives (Best First):")
-    for rank, (idx, rel) in enumerate(ranking, start=1):
-        print(f"Rank {rank}: Alternative A{idx+1} (Relative Index = {rel:.6f})")
+    results = {
+        "method": "W-FRIM",
+        "results": {
+            "ranking": [alt_names[idx] for idx, _ in ranking],
+            "scores": {alt_names[i]: round(score, 6) for i, score in enumerate(relative_indices)},
+            "normalized_weights": {
+                alt_names[i]: [round(val, 6) for val in weighted_matrix[i]] for i in range(len(alt_names))
+            }
+        }
+    }
+
+    print(json.dumps(results, indent=2))
