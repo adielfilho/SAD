@@ -142,9 +142,9 @@ class FuzzyTOPSIS:
                 
                 # Normaliza usando c_min para crit�rios de custo
                 for i in range(n_alternatives):
-                    normalized_matrix[i, j, 0] = c_min / decision_matrix[i, j, 0]
+                    normalized_matrix[i, j, 0] = c_min / decision_matrix[i, j, 2]
                     normalized_matrix[i, j, 1] = c_min / decision_matrix[i, j, 1]
-                    normalized_matrix[i, j, 2] = c_min / decision_matrix[i, j, 2]
+                    normalized_matrix[i, j, 2] = c_min / decision_matrix[i, j, 0]
         
         return normalized_matrix
     
