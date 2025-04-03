@@ -1,0 +1,19 @@
+[project]
+name = "ftopsis_class_cin"
+version = "0.1.1"
+description = "Biblioteca Ftopsis Class"
+authors = [
+    {name = "José Ronaldo, Luiz Henrique"}
+]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pandas==2.2.2",
+  "numpy==1.26.4"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

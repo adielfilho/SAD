@@ -6,6 +6,7 @@ from vikor_cin import vikor_decision_support
 from topsis_cin import topsis_decision_support
 from rim_cin import rim_decision_support
 from wfrim_cin import wfrim_decision_support
+from ftopsis_class_cin import ftopsis_class_decision_support
 
 def decision_support(input_data: Dict[str, Any]) -> Dict[str, Any]:
   method = input_data.get('method', '').lower()
@@ -13,4 +14,5 @@ def decision_support(input_data: Dict[str, Any]) -> Dict[str, Any]:
   if method == 'topsis': return  json.loads(topsis_decision_support(input_data))
   if method == 'rim': return  json.loads(rim_decision_support(input_data))
   if method == 'wfrim': return  wfrim_decision_support(input_data)
+  if method == 'ftopsis-class': return  ftopsis_class_decision_support(input_data['parameters'])
   raise Exception(f"SAD CIN: method '{input_data.get('method', '')}' not recognized")
