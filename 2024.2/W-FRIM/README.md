@@ -36,14 +36,7 @@ Esses dados são processados para:
 
 Requisitos:
 - Python 3.7+
-- pandas
 - numpy
-
-Instale as dependências com:
-
-```bash
-pip install pandas numpy
-```
 
 ## Execução
 
