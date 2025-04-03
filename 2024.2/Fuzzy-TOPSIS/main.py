@@ -196,12 +196,9 @@ class FuzzyTOPSIS:
         fpis = np.zeros((n_criteria, 3))
         fnis = np.zeros((n_criteria, 3))
         
-        fpis_max = []
-        fnis_min = []
-
         for j in range(n_criteria):
-            fpis[j] = [np.max(weighted_matrix[:, j, 2]), np.max(weighted_matrix[:, j, 2]), np.max(weighted_matrix[:, j, 2])]
-            fnis[j] = [np.min(weighted_matrix[:, j, 0]), np.min(weighted_matrix[:, j, 0]), np.min(weighted_matrix[:, j, 0])]
+            fpis[j] = [1, 1, 1]
+            
                 
         return fpis, fnis
     
@@ -368,3 +365,4 @@ def process_fuzzy_topsis(json_input):
             "error": True,
             "message": str(e)
         }
+    
