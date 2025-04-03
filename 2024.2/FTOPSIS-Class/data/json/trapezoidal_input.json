@@ -42,7 +42,7 @@
         "0": "Conservative",
         "1": "Moderate",
         "2": "Bold",
-        "3": "Agressive"
+        "3": "Aggressive"
     },
     "reference_matrix": {
         "Conservative": ["L", "VL", "VL", "VL", "VH", "VL", "H"],
