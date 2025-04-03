@@ -1,6 +1,8 @@
 {
+  "method": "W-FRIM",
+  "parameters": {
     "criteria": ["C1", "C2", "C3", "C4", "C5", "C6"],
-    "alternatives": [
+    "performance_matrix": [
     {
       "name": "A1",
       "values": {
@@ -155,5 +157,6 @@
       "C5": [0.1568, 0.1600, 0.1632],
       "C6": [0.1568, 0.1600, 0.1632]
     }
+  } 
   }
   

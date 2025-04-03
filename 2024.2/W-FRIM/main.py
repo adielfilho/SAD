@@ -1,12 +1,7 @@
 import numpy as np
 import math
 import json
-from utils import (
-    get_decision_matrix_from_json,
-    get_lower_bound_ranges_and_reference_ideal_pairs_from_json,
-    get_preference_lambdas_from_json,
-    get_criterion_weights_from_json,
-)
+from utils import get_all_parameters
 
 
 class WeightedFuzzyReferenceIdealMethod:
@@ -171,16 +166,19 @@ class WeightedFuzzyReferenceIdealMethod:
             self.weighted_normalized_matrix,
         )
 
+
 # --- Main Execution Block with JSON ---
 if __name__ == "__main__":
     with open("data/input.json") as f:
         json_data = json.load(f)
 
-    criteria = json_data["criteria"]
-    decision_matrix = get_decision_matrix_from_json(json_data["alternatives"], criteria)
-    lower_bound_ranges, reference_ideal_pairs = get_lower_bound_ranges_and_reference_ideal_pairs_from_json(json_data["range"], json_data["reference_ideal"], criteria)
-    preference_lambdas = get_preference_lambdas_from_json(json_data["preferences"], criteria)
-    criterion_weights = get_criterion_weights_from_json(json_data["weights"], criteria)
+    (
+        decision_matrix,
+        lower_bound_ranges,
+        reference_ideal_pairs,
+        preference_lambdas,
+        criterion_weights,
+    ) = get_all_parameters(json_data)
 
     model = WeightedFuzzyReferenceIdealMethod(
         decision_matrix,
