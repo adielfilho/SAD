@@ -1,0 +1,17 @@
+[project]
+name = "wfrim_cin"
+version = "0.1.0"
+description = "Biblioteca Wfrim"
+authors = [
+    {name = "Victoria Pantoja, Wytoria Rodrigues, Rafaela Fernandes, Tiago Chacon"}
+]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
