@@ -1,13 +1,13 @@
 from typing import Dict, List
 
-def invert_matrix(z: List[str], criteria: List[str], decision_matrix_by_criteria: Dict[str, List[str]]) -> Dict[str, List[str]]:
+def invert_matrix(label_1: List[str], label_2: List[str], matrix: Dict[str, List[str]]) -> Dict[str, List[str]]:
     """
-    Inverte a matriz de decisão por critério para uma matriz fuzzy (por elemento), validando os dados.
+    Inverte a matriz.
 
     Args:
-        z: Lista de elementos (ex: ["F1", "F2", ..., "F10"]).
-        criteria: Lista de critérios (ex: ["C1", "C2", ..., "C7"]).
-        decision_matrix_by_criteria: Dicionário onde cada chave é um critério e o valor é uma lista de termos.
+        label_1: Lista de elementos (ex: ["F1", "F2", ..., "F10"]).
+        label_2: Lista de critérios (ex: ["C1", "C2", ..., "C7"]).
+        matrix: Dicionário onde cada chave é um critério e o valor é uma lista de termos.
 
     Returns:
         Um dicionário no formato {"F1": ["VL", "VL", ...], "F2": [...], ...}.
@@ -16,24 +16,22 @@ def invert_matrix(z: List[str], criteria: List[str], decision_matrix_by_criteria
         KeyError: Se algum critério não estiver presente na matriz.
         ValueError: Se o tamanho das listas de termos for inconsistente.
     """
-    # Verificar se todos os critérios existem
-    missing_criteria = [c for c in criteria if c not in decision_matrix_by_criteria]
-    if missing_criteria:
-        raise KeyError(f"Critérios faltando na matriz: {missing_criteria}")
+
+    missing_label_2 = [c for c in label_2 if c not in matrix]
+    if missing_label_2:
+        raise KeyError(f"Critérios faltando na matriz: {missing_label_2}")
     
-    # Verificar o tamanho das listas de termos
-    expected_length = len(z)
-    for criterion in criteria:
-        actual_length = len(decision_matrix_by_criteria[criterion])
+    expected_length = len(label_1)
+    for criterion in label_2:
+        actual_length = len(matrix[criterion])
         if actual_length != expected_length:
             raise ValueError(f"Critério '{criterion}' tem {actual_length} termos, mas deveria ter {expected_length}.")
     
-    # Inverter a matriz
     fuzzy_decision_matrix = {}
-    for i, element in enumerate(z):
-        fuzzy_decision_matrix[element] = [
-            decision_matrix_by_criteria[criterion][i]
-            for criterion in criteria
+    for i, tag in enumerate(label_1):
+        fuzzy_decision_matrix[tag] = [
+            matrix[criterion][i]
+            for criterion in label_2
         ]
     
     return fuzzy_decision_matrix
