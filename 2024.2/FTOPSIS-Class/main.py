@@ -5,6 +5,7 @@ from typing import Tuple, Dict, Any, Union
 from utils.format_output import format_to_json
 from ftopsis_class.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
 from utils.invert_matrix import invert_matrix
+from utils.constants import FILE_PATH
 
 class FTOPSISProcessor:
     
@@ -152,8 +153,6 @@ def triangular_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
 
 def main() -> None:
     while True:
-        file_path = 'data/json/trapezoidal_input.json'
-        
         #try:
         data = FTOPSISProcessor.load_json_data(file_path)
         fuzzy_type = FTOPSISProcessor.detect_fuzzy_type(data)
