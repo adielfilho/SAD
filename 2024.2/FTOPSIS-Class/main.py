@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, Dict, Any, Union
 from utils.format_output import format_to_json
-from ftopsis_class.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
 from utils.invert_matrix import invert_matrix
 from utils.constants import FILE_PATH
 
@@ -66,6 +65,8 @@ class FTOPSISProcessor:
         raise ValueError("Could not determine fuzzy number type from JSON structure")
 
 def trapezoidal_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
+    from cores_by_fuzzy_length.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
+
     criteria_type = {k: CriteriaType[v] for k, v in data['criteria_type'].items()}
     
     ftopsis = FTOPSISClass(
@@ -110,7 +111,7 @@ def trapezoidal_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]
     return result, json_output
 
 def triangular_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
-    from ftopsis_class.triangular_core import CriteriaType, FTOPSISClass as TriFTOPSIS
+    from cores_by_fuzzy_length.triangular_core import CriteriaType, FTOPSISClass as TriFTOPSIS
 
     linguistic_vars_alt = {k: np.array(v) for k, v in data['linguistic_variables_alternatives'].items()}
     linguistic_vars_weight = {k: np.array(v) for k, v in data['linguistic_variables_weights'].items()}
