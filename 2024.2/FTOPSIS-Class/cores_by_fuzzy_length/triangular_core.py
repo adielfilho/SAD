@@ -37,7 +37,7 @@ class FTOPSISClass:
             Type = criteria_type[y]
 
             if Type == CriteriaType.Cost:
-                normalized_fuzzy_number = division_dictionary[y] / matrix[y]
+                normalized_fuzzy_number = division_dictionary[y] / (matrix[y] + np.finfo(float).eps)
                 normalized_list = list(
                     map(
                         lambda row: np.nan_to_num(row, nan=0.0).tolist(),

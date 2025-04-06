@@ -47,7 +47,7 @@ class FTOPSISClass:
             return [FuzzyNumber(v.a1/max_val, v.a2/max_val, v.a3/max_val, v.a4/max_val) for v in values]
         else:
             min_val = min([v.a1 for v in values])  # Usamos o menor valor do suporte
-            return [FuzzyNumber(min_val/v.a4, min_val/v.a3, min_val/v.a2, min_val/v.a1) for v in values]
+            return [FuzzyNumber(min_val/(v.a4+np.finfo(float).eps), min_val/(v.a3+np.finfo(float).eps), min_val/(v.a2+np.finfo(float).eps), min_val/(v.a1+np.finfo(float).eps)) for v in values]
 
     def normalize_matrix(self) -> Dict:
         inverted_matrix = invert_matrix(self.alternatives, self.criteria, self.decision_matrix)
