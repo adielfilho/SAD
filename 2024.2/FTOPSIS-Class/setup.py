@@ -4,8 +4,8 @@ setup(
     name='ftopsis_class',
     version='0.1',
     description='FTOPSIS Class implemented in python',
-    author='Lucas C., Ian F., Matheus F., Rodrigo B., Arthur C.',
-    url='https://github.com/lucasccampos/ftopsis_class',
+    author='José Ronaldo, Luiz Henrique',
+    url='https://github.com/Dev-JoseRonaldo/FTOPSIS-Class',
     packages=find_packages(),
     install_requires=[
         'pandas>=2.2.1',

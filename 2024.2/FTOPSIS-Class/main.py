@@ -3,20 +3,22 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, Dict, Any, Union
 from utils.format_output import format_to_json
-from ftopsis_class.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
 from utils.invert_matrix import invert_matrix
+from utils.constants import FILE_PATH
+from core.trapezoidal_core import FuzzyNumber, FTOPSISClass, CriteriaType
+from core.triangular_core import CriteriaType, FTOPSISClass as TriFTOPSIS
 
 class FTOPSISProcessor:
     
     @staticmethod
-    def load_json_data(file_path: str) -> Dict[str, Any]:
+    def load_json_data(FILE_PATH: str) -> Dict[str, Any]:
         try:
-            with open(file_path, 'r') as f:
+            with open(FILE_PATH, 'r') as f:
                 return json.load(f)
         except FileNotFoundError:
-            raise FileNotFoundError(f"Input file {file_path} not found")
+            raise FileNotFoundError(f"Input file {FILE_PATH} not found")
         except json.JSONDecodeError:
-            raise ValueError(f"Invalid JSON format in {file_path}")
+            raise ValueError(f"Invalid JSON format in {FILE_PATH}")
 
     @staticmethod
     def print_results(result: pd.DataFrame, title: str = "Results") -> None:
@@ -109,8 +111,6 @@ def trapezoidal_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]
     return result, json_output
 
 def triangular_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
-    from ftopsis_class.triangular_core import CriteriaType, FTOPSISClass as TriFTOPSIS
-
     linguistic_vars_alt = {k: np.array(v) for k, v in data['linguistic_variables_alternatives'].items()}
     linguistic_vars_weight = {k: np.array(v) for k, v in data['linguistic_variables_weights'].items()}
 
@@ -152,10 +152,8 @@ def triangular_ftopsis_class(data: Dict[str, Any]) -> Tuple[pd.DataFrame, Dict]:
 
 def main() -> None:
     while True:
-        file_path = 'data/json/trapezoidal_input.json'
-        
         #try:
-        data = FTOPSISProcessor.load_json_data(file_path)
+        data = FTOPSISProcessor.load_json_data(FILE_PATH)
         fuzzy_type = FTOPSISProcessor.detect_fuzzy_type(data)
         
         if fuzzy_type == 'triangular':
@@ -166,7 +164,7 @@ def main() -> None:
 
         """    
         except FileNotFoundError:
-            print(f"Arquivo não encontrado: {file_path}. Por favor, tente novamente.")
+            print(f"Arquivo não encontrado: {FILE_PATH}. Por favor, tente novamente.")
         except ValueError as e:
             print(f"Erro no arquivo: {str(e)}. Por favor, verifique o formato e tente novamente.")
         except Exception as e:

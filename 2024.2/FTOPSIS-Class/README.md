@@ -451,3 +451,29 @@ class FTOPSISClass:
 }
 
 ```
+
+
+## Sobre o Processo de Implementação
+
+O primeiro passo foi ler o artigo relacionado ao FTOPSIS-Class para entender o funcionamento do algoritmo, após isso, a equipe focou em compreender o código da equipe anterior, com o fim de realizar as melhorias necessárias, iniciando pela possibilidade de realizar operações com números fuzzy de tamanho 4, o que era limitado a apenas a tamanho 3 no código da equipe anterior, em paralelo a isso também focamos em fornecer uma boa estrutura de diretórios e códigos, com o fim de organizar melhor o repositório. Após isso, criamos um arquivo main.py para unificar o fluxo de entrada de dados para servir tanto para números fuzzy trapezoidais quanto para números fuzzy triangulares. Depois, focamos em melhorar o código e a estrutura do projeto, e resolver alguns problemas, como por exemplo o tratamento de divisão por zero (descrito com mais detalhes no próximo tópico).
+
+
+## Objetivos Alcançados
+
+- Reorganização completa do código legado.
+- Implementação do **FTOPSIS-Class com números fuzzy trapezoidais**.
+- Integração de fuzzy **trapezoidais e triangulares** em um fluxo único via `main.py`.
+- Padronização de entrada e saída usando **arquivos `.json`**.
+- **Tratamento de divisão por zero** com uso de `epsilon` (menor valor float possível via NumPy), prevenindo erros sem afetar significativamente os resultados.
+
+
+
+## Trabalhos Futuros
+
+Algumas ideias e melhorias que podem ser implementadas no futuro:
+
+- Integração mais robusta entre os diferentes comprimentos de números fuzzy.
+- Implementação de **testes unitários** e **testes de integração**.
+- Otimização geral do código.
+- Padronização da entrada no back-end para fuzzy triangulares e trapezoidais (atualmente feito via script de conversão no front-end).
+

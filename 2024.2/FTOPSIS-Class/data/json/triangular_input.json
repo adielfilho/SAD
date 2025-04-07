@@ -37,9 +37,9 @@
       "C4": ["I"]
   },
   "criteria_type": {
-      "C1": "Benefit",
-      "C2": "Benefit",
-      "C3": "Benefit",
+      "C1": "Cost",
+      "C2": "Cost",
+      "C3": "Cost",
       "C4": "Benefit"
   },
   "alternatives": [
