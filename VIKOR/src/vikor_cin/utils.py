@@ -1,9 +1,9 @@
-# vikor_cin/utils.py
+# vikor/utils.py
 
 from __future__ import annotations
 from typing import List
-from .models import Alternative, Criterion
-from .exceptions import VikorMissingScoreError
+from models import Alternative, Criterion
+from exceptions import VikorMissingScoreError
 
 __all__ = ["normalize_value", "validate_alternatives_scores"]
 

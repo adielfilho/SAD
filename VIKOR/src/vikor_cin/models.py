@@ -1,4 +1,4 @@
-# vikor_cin/models.py
+# vikor/models.py
 
 from __future__ import annotations
 from typing import Dict, Union

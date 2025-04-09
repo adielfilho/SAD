@@ -1,4 +1,4 @@
-# vikor_cin/exceptions.py
+# vikor/exceptions.py
 
 from typing import Optional
 

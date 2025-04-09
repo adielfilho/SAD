@@ -1,14 +1,15 @@
-# vikor_cin/main.py
+# vikor.py
 
 from __future__ import annotations
 import math
-
 from typing import Dict, List, Tuple, Any
 
-from .models import Alternative, Criterion
-from .decision import Vikor
+from models import Alternative, Criterion
+from decision import Vikor
 
-def compute_distance_to_ideal(vikor_obj: Vikor, alternatives: List[Alternative], criteria: List[Criterion]) -> Dict[str, float]:
+def compute_distance_to_ideal(
+    vikor_obj: Vikor, alternatives: List[Alternative], criteria: List[Criterion]
+) -> Dict[str, float]:
     """
     Calcula a distância Euclidiana de cada alternativa até a solução ideal.
 
@@ -84,7 +85,7 @@ def compute_weight_stability(
             stability[crit.name] = (None, None)
     return stability
 
-def vikor_decision_support(input_data: Dict[str, Any]) -> Dict[str, Any]:
+def run_vikor_decision(input_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Executa o método VIKOR com base na estrutura de entrada e retorna os resultados completos.
 

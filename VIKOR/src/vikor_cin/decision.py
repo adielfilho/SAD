@@ -1,11 +1,11 @@
-# vikor_cin/decision.py
+# vikor/decision.py
 
 from __future__ import annotations
 
 from typing import List, Dict
-from .models import Alternative, Criterion
-from .exceptions import VikorError
-from .utils import normalize_value, validate_alternatives_scores
+from models import Alternative, Criterion
+from exceptions import VikorError
+from utils import normalize_value, validate_alternatives_scores
 
 class Vikor:
     def __init__(self, alternatives: List[Alternative], criteria: List[Criterion], v: float = 0.5) -> None:
