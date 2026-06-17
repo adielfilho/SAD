@@ -1,0 +1,21 @@
+{
+  "method": "VIKOR",
+  "parameters": {
+    "alternatives": ["A1", "A2", "A3"],
+    "criteria": ["f1", "f2"],
+    "performance_matrix": {
+      "A1": [1, 3000],
+      "A2": [2, 3750],
+      "A3": [5, 4500]
+    },
+    "criteria_types": {
+      "f1": "min",
+      "f2": "max"
+    },
+    "weights": {
+      "f1": 0.5,
+      "f2": 0.5
+    },
+    "v": 0.5
+  }
+}
