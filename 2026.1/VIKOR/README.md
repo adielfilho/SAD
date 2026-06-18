@@ -225,3 +225,8 @@ Ou, se estiver usando outro Python com as dependencias instaladas:
 ```powershell
 python tests\test_vikor.py
 ```
+
+## Autores
+
+- Alberis Alves da Silva	(aas11@cin.ufpe.br)
+- André Vinicius Campos Lucena	(avcl@cin.ufpe.br)
